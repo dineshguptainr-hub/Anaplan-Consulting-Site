@@ -60,14 +60,14 @@ const CAPABILITIES = [
 
 export default function Capabilities() {
   return (
-    <section id="capabilities" className="bg-ink-900 py-24">
+    <section id="capabilities" className="bg-surface py-24">
       <div className="container-max">
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow justify-center">Core Capabilities</span>
           <h2 className="section-heading mt-4">
             One consultant. The full planning lifecycle.
           </h2>
-          <p className="mt-4 text-mist-300">
+          <p className="mt-4 text-ink-500">
             From choosing the platform to deploying it to your last end user —
             every stage of Connected Planning, handled end-to-end across
             Finance, HR, and Cost.
@@ -78,24 +78,24 @@ export default function Capabilities() {
           {CAPABILITIES.map((cap, i) => (
             <div
               key={cap.label}
-              className="card group relative overflow-hidden p-8 transition hover:border-gold-500/30"
+              className="card group relative overflow-hidden p-8 transition hover:border-trust-600/30"
             >
-              <span className="absolute right-6 top-6 font-display text-5xl font-semibold text-white/[0.04]">
+              <span className="absolute right-6 top-6 font-display text-5xl font-semibold text-ink-900/[0.05]">
                 0{i + 1}
               </span>
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-gold-500/15 to-signal-teal/10 text-gold-400">
+              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-trust-100 text-trust-600">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                   {cap.icon}
                 </svg>
               </span>
 
-              <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-signal-teal">
+              <p className="mt-6 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-trust-600">
                 {cap.label}
               </p>
-              <h3 className="mt-2 font-display text-xl font-semibold text-white">
+              <h3 className="mt-2 font-display text-xl font-semibold text-ink-900">
                 {cap.title}
               </h3>
-              <p className="mt-3 text-sm leading-relaxed text-mist-300">
+              <p className="mt-3 text-sm leading-relaxed text-ink-500">
                 {cap.detail}
               </p>
             </div>

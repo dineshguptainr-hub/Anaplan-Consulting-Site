@@ -56,14 +56,14 @@ const AFTER_ITEMS = [
 
 export default function PainPleasure() {
   return (
-    <section id="transformation" className="bg-ink-950 py-24">
+    <section id="transformation" className="bg-paper py-24">
       <div className="container-max">
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow justify-center">The Transformation</span>
           <h2 className="section-heading mt-4">
             You know the pain. Here&apos;s the graduation.
           </h2>
-          <p className="mt-4 text-mist-300">
+          <p className="mt-4 text-ink-500">
             Every finance leader living in spreadsheets recognizes this list.
             Here&apos;s exactly what changes when your planning moves onto a
             single connected model.
@@ -73,9 +73,9 @@ export default function PainPleasure() {
         <div className="mt-16 grid gap-6 lg:grid-cols-2">
           {/* BEFORE */}
           <div className="card relative overflow-hidden p-8">
-            <div className="absolute inset-x-0 top-0 h-1 bg-signal-red/60" />
+            <div className="absolute inset-x-0 top-0 h-1 bg-alert-600/70" />
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal-red/10 text-signal-red">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-alert-100 text-alert-600">
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                   <path
                     d="M10 6v5m0 3h.01M8.6 2.9 1.7 15a2 2 0 0 0 1.7 3h13.2a2 2 0 0 0 1.7-3L11.4 2.9a2 2 0 0 0-3.4 0Z"
@@ -87,10 +87,10 @@ export default function PainPleasure() {
                 </svg>
               </span>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-signal-red">
+                <p className="font-mono text-xs font-semibold uppercase tracking-wider text-alert-600">
                   Before
                 </p>
-                <p className="font-display text-lg font-semibold text-white">
+                <p className="font-display text-lg font-semibold text-ink-900">
                   Spreadsheet Hell
                 </p>
               </div>
@@ -104,7 +104,7 @@ export default function PainPleasure() {
                     height="18"
                     viewBox="0 0 20 20"
                     fill="none"
-                    className="mt-0.5 shrink-0 text-signal-red"
+                    className="mt-0.5 shrink-0 text-alert-600"
                   >
                     <path
                       d="m6 6 8 8m0-8-8 8"
@@ -114,10 +114,10 @@ export default function PainPleasure() {
                     />
                   </svg>
                   <div>
-                    <p className="text-sm font-medium text-mist-100">
+                    <p className="text-sm font-medium text-ink-900">
                       {item.title}
                     </p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-mist-400">
+                    <p className="mt-0.5 text-sm leading-relaxed text-ink-500">
                       {item.detail}
                     </p>
                   </div>
@@ -127,10 +127,10 @@ export default function PainPleasure() {
           </div>
 
           {/* AFTER */}
-          <div className="card relative overflow-hidden p-8 ring-1 ring-gold-500/20">
-            <div className="absolute inset-x-0 top-0 h-1 bg-signal-green/70" />
+          <div className="card relative overflow-hidden p-8 ring-1 ring-trust-600/20">
+            <div className="absolute inset-x-0 top-0 h-1 bg-trust-600/80" />
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal-green/10 text-signal-green">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-trust-100 text-trust-600">
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                   <path
                     d="M10 2 3 6v5c0 4 3 6.5 7 7 4-.5 7-3 7-7V6l-7-4Z"
@@ -141,10 +141,10 @@ export default function PainPleasure() {
                 </svg>
               </span>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-signal-green">
+                <p className="font-mono text-xs font-semibold uppercase tracking-wider text-trust-600">
                   After
                 </p>
-                <p className="font-display text-lg font-semibold text-white">
+                <p className="font-display text-lg font-semibold text-ink-900">
                   Connected Planning
                 </p>
               </div>
@@ -158,7 +158,7 @@ export default function PainPleasure() {
                     height="18"
                     viewBox="0 0 20 20"
                     fill="none"
-                    className="mt-0.5 shrink-0 text-signal-green"
+                    className="mt-0.5 shrink-0 text-trust-600"
                   >
                     <path
                       d="m4 10.5 4 4 8-9"
@@ -169,10 +169,10 @@ export default function PainPleasure() {
                     />
                   </svg>
                   <div>
-                    <p className="text-sm font-medium text-mist-100">
+                    <p className="text-sm font-medium text-ink-900">
                       {item.title}
                     </p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-mist-400">
+                    <p className="mt-0.5 text-sm leading-relaxed text-ink-500">
                       {item.detail}
                     </p>
                   </div>

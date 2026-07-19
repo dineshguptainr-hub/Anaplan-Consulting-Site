@@ -78,7 +78,7 @@ export default function ContactForm() {
   if (status === "success") {
     return (
       <div className="card flex flex-col items-center gap-4 p-10 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-signal-green/10 text-signal-green">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-trust-100 text-trust-600">
           <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
             <path
               d="m4 10.5 4 4 8-9"
@@ -89,10 +89,10 @@ export default function ContactForm() {
             />
           </svg>
         </span>
-        <h3 className="font-display text-xl font-semibold text-white">
+        <h3 className="font-display text-xl font-semibold text-ink-900">
           Request received.
         </h3>
-        <p className="max-w-sm text-sm text-mist-300">
+        <p className="max-w-sm text-sm text-ink-500">
           Thanks — I&apos;ll personally review your details and follow up
           within one business day to schedule your Strategy Call.
         </p>
@@ -110,7 +110,7 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} noValidate className="card space-y-5 p-8 sm:p-10">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-mist-200">
+          <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-ink-700">
             Full Name
           </label>
           <input
@@ -119,15 +119,15 @@ export default function ContactForm() {
             value={form.name}
             onChange={(e) => update("name", e.target.value)}
             placeholder="Jane Whitfield"
-            className="w-full rounded-lg border border-white/10 bg-ink-900 px-4 py-3 text-sm text-white placeholder:text-mist-400/60 outline-none transition focus:border-gold-500/50 focus:ring-2 focus:ring-gold-500/20"
+            className="w-full rounded-lg border border-ink-900/10 bg-paper px-4 py-3 text-sm text-ink-900 placeholder:text-ink-500/50 outline-none transition focus:border-trust-600/50 focus:ring-2 focus:ring-trust-600/20"
           />
           {errors.name && (
-            <p className="mt-1.5 text-xs text-signal-red">{errors.name}</p>
+            <p className="mt-1.5 text-xs text-alert-600">{errors.name}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-mist-200">
+          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink-700">
             Corporate Email
           </label>
           <input
@@ -136,37 +136,37 @@ export default function ContactForm() {
             value={form.email}
             onChange={(e) => update("email", e.target.value)}
             placeholder="jane@company.com"
-            className="w-full rounded-lg border border-white/10 bg-ink-900 px-4 py-3 text-sm text-white placeholder:text-mist-400/60 outline-none transition focus:border-gold-500/50 focus:ring-2 focus:ring-gold-500/20"
+            className="w-full rounded-lg border border-ink-900/10 bg-paper px-4 py-3 text-sm text-ink-900 placeholder:text-ink-500/50 outline-none transition focus:border-trust-600/50 focus:ring-2 focus:ring-trust-600/20"
           />
           {errors.email && (
-            <p className="mt-1.5 text-xs text-signal-red">{errors.email}</p>
+            <p className="mt-1.5 text-xs text-alert-600">{errors.email}</p>
           )}
         </div>
       </div>
 
       <div>
-        <label htmlFor="tool" className="mb-1.5 block text-sm font-medium text-mist-200">
+        <label htmlFor="tool" className="mb-1.5 block text-sm font-medium text-ink-700">
           Current Planning Tool
         </label>
         <select
           id="tool"
           value={form.tool}
           onChange={(e) => update("tool", e.target.value)}
-          className="w-full appearance-none rounded-lg border border-white/10 bg-ink-900 px-4 py-3 text-sm text-white outline-none transition focus:border-gold-500/50 focus:ring-2 focus:ring-gold-500/20"
+          className="w-full appearance-none rounded-lg border border-ink-900/10 bg-paper px-4 py-3 text-sm text-ink-900 outline-none transition focus:border-trust-600/50 focus:ring-2 focus:ring-trust-600/20"
         >
           {TOOL_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value} className="bg-ink-900">
+            <option key={opt.value} value={opt.value} className="bg-paper">
               {opt.label}
             </option>
           ))}
         </select>
         {errors.tool && (
-          <p className="mt-1.5 text-xs text-signal-red">{errors.tool}</p>
+          <p className="mt-1.5 text-xs text-alert-600">{errors.tool}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="painPoint" className="mb-1.5 block text-sm font-medium text-mist-200">
+        <label htmlFor="painPoint" className="mb-1.5 block text-sm font-medium text-ink-700">
           Primary Planning Pain Point
         </label>
         <textarea
@@ -175,15 +175,15 @@ export default function ContactForm() {
           value={form.painPoint}
           onChange={(e) => update("painPoint", e.target.value)}
           placeholder="e.g. Our workforce plan breaks every time HR changes headcount assumptions…"
-          className="w-full resize-none rounded-lg border border-white/10 bg-ink-900 px-4 py-3 text-sm text-white placeholder:text-mist-400/60 outline-none transition focus:border-gold-500/50 focus:ring-2 focus:ring-gold-500/20"
+          className="w-full resize-none rounded-lg border border-ink-900/10 bg-paper px-4 py-3 text-sm text-ink-900 placeholder:text-ink-500/50 outline-none transition focus:border-trust-600/50 focus:ring-2 focus:ring-trust-600/20"
         />
         {errors.painPoint && (
-          <p className="mt-1.5 text-xs text-signal-red">{errors.painPoint}</p>
+          <p className="mt-1.5 text-xs text-alert-600">{errors.painPoint}</p>
         )}
       </div>
 
       {submitError && (
-        <p className="text-center text-sm text-signal-red">{submitError}</p>
+        <p className="text-center text-sm text-alert-600">{submitError}</p>
       )}
 
       <button
@@ -194,8 +194,8 @@ export default function ContactForm() {
         {status === "submitting" ? "Submitting…" : "Book a Strategy Call"}
       </button>
 
-      <p className="text-center text-xs text-mist-400">
-        No spam, no sales sequence. A direct reply from Marcus, within one
+      <p className="text-center text-xs text-ink-500">
+        No spam, no sales sequence. A direct reply from Dinesh, within one
         business day.
       </p>
     </form>

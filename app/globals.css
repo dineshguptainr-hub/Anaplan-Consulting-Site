@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --font-display: "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  --font-display: "Georgia", serif;
+  --font-body: system-ui, sans-serif;
+  --font-mono: Consolas, monospace;
 }
 
 html {
@@ -12,13 +13,13 @@ html {
 }
 
 body {
-  background-color: #0a0e17;
-  color: #e7eaf1;
+  background-color: #f6f7f9;
+  color: #17263b;
 }
 
 ::selection {
-  background: rgba(239, 184, 78, 0.35);
-  color: #fff;
+  background: rgba(29, 78, 137, 0.18);
+  color: #17263b;
 }
 
 .container-max {
@@ -26,21 +27,21 @@ body {
 }
 
 .eyebrow {
-  @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold-500;
+  @apply inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-trust-600;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-gold-500 px-6 py-3.5 text-sm font-semibold text-ink-950 shadow-glow transition hover:bg-gold-400 active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 rounded-md bg-trust-600 px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:bg-trust-500 active:scale-[0.98];
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-semibold text-mist-100 backdrop-blur transition hover:border-white/30 hover:bg-white/10 active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 rounded-md border border-ink-900/20 bg-white px-6 py-3.5 text-sm font-semibold text-ink-900 transition hover:border-trust-600/40 hover:bg-trust-100 active:scale-[0.98];
 }
 
 .card {
-  @apply rounded-2xl border border-white/10 bg-ink-850/70 shadow-card backdrop-blur-sm;
+  @apply rounded-xl border border-ink-900/10 bg-surface shadow-card;
 }
 
 .section-heading {
-  @apply text-3xl font-semibold tracking-tight text-white sm:text-4xl;
+  @apply text-3xl font-semibold tracking-tight text-ink-900 sm:text-4xl;
 }

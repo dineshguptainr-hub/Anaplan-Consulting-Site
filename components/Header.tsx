@@ -8,16 +8,16 @@ const NAV_LINKS = [
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-ink-900/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-ink-900/10 bg-paper/85 backdrop-blur-md">
       <div className="container-max flex h-18 items-center justify-between py-4">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-gold-400 to-gold-600 font-display text-sm font-bold text-ink-950">
+          <span className="flex h-8 w-8 -rotate-3 items-center justify-center rounded-md border-[1.5px] border-trust-600 font-mono text-xs font-bold text-trust-600">
             DG
           </span>
-          <span className="font-display text-[15px] font-semibold tracking-tight text-white">
+          <span className="font-display text-[15px] font-semibold tracking-tight text-ink-900">
             Dinesh Gupta
-            <span className="ml-2 hidden text-mist-400 font-normal sm:inline">
-              / Master Anaplanner
+            <span className="ml-2 hidden font-mono text-[11px] font-normal uppercase tracking-wide text-ink-500 sm:inline">
+              Master Anaplanner
             </span>
           </span>
         </Link>
@@ -27,7 +27,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-mist-300 transition hover:text-white"
+              className="text-sm font-medium text-ink-500 transition hover:text-ink-900"
             >
               {link.label}
             </Link>
