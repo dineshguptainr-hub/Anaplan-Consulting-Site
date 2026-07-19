@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+// no-op: force a fresh Vercel deployment to pick up env vars
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
 
