@@ -1,21 +1,7 @@
 const CAPABILITIES = [
   {
-    label: "Strategic Selection",
-    title: "The Right Suite. The Right License Mix.",
-    detail:
-      "Before a single model gets built, I guide CFOs through vendor and suite selection — mapping your actual planning complexity to the right Anaplan tier and license structure, so you never overbuy or outgrow your platform in year one.",
-    icon: (
-      <path
-        d="M4 6h16M4 12h16M4 18h10"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    ),
-  },
-  {
-    label: "Financial Modeling & Analytics",
-    title: "Dynamic, Driver-Based Forecasting.",
+    label: "Finance Planning",
+    title: "Driver-Based P&L, Cash Flow & Forecasting.",
     detail:
       "Multi-method financial models — revenue, opex, P&L, balance sheet, cash flow — built on live business drivers instead of hardcoded assumptions, so every forecast updates itself when the business changes.",
     icon: (
@@ -28,10 +14,10 @@ const CAPABILITIES = [
     ),
   },
   {
-    label: "Cost & HR Planning",
-    title: "Granular Allocation. Real Workforce Logic.",
+    label: "Workforce Planning",
+    title: "Headcount, Comp & Org Logic. No Spreadsheet Required.",
     detail:
-      "Cost allocation engines that trace every dollar to its true owner, plus workforce planning models that handle headcount, comp, attrition, and org changes without a single manual spreadsheet update.",
+      "Workforce planning models that handle headcount, compensation, attrition, and org changes across every department — with full audit trails, not a single manual spreadsheet update.",
     icon: (
       <path
         d="M8 14a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 19c.5-2.5 2.7-4 6-4s5.5 1.5 6 4M12 19c.5-2.5 2.7-4 6-4s5.5 1.5 6 4"
@@ -43,10 +29,24 @@ const CAPABILITIES = [
     ),
   },
   {
-    label: "Workflow Automation",
-    title: "Forecasts Submitted On Time. Automatically.",
+    label: "Opex Planning",
+    title: "Granular Allocation, Traced to the True Owner.",
     detail:
-      "End-to-end workflow delegation — tasked reminders, submission tracking, and hard locks before close — so managers submit on schedule and your team spends its time analyzing numbers, not chasing spreadsheets.",
+      "Cost allocation engines that trace every operating dollar to its true owner and cost center, replacing manual chargeback spreadsheets with a governed, auditable allocation model.",
+    icon: (
+      <path
+        d="M4 6h16M4 12h16M4 18h10"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    ),
+  },
+  {
+    label: "Capex Planning",
+    title: "Asset & Project Spend, Modeled Before You Commit.",
+    detail:
+      "Capital project and asset models — spend phasing, depreciation schedules, and approval workflows — so leadership sees the full return-on-investment picture before capital is committed.",
     icon: (
       <path
         d="M12 3v3m0 12v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M3 12h3m12 0h3M4.2 19.8l2.1-2.1m11.4-11.4 2.1-2.1"
@@ -70,7 +70,7 @@ export default function Capabilities() {
           <p className="mt-4 text-ink-500">
             From choosing the platform to deploying it to your last end user —
             every stage of Connected Planning, handled end-to-end across
-            Finance, HR, and Cost.
+            Finance, Workforce, Opex, and Capex.
           </p>
         </div>
 

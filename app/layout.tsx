@@ -25,7 +25,7 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Dinesh Gupta | Master Anaplanner — Connected Planning Consulting",
   description:
-    "Escape spreadsheet hell. A certified Master Anaplanner helping Finance leaders replace fragile Excel models with automated, connected planning across Financial, HR, and Cost domains.",
+    "Escape spreadsheet hell. A certified Master Anaplanner helping Finance leaders replace fragile Excel models with automated, connected planning across Finance, Workforce, Opex, and Capex domains.",
   keywords: [
     "Anaplan consultant",
     "Anaplan implementation",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Dinesh Gupta | Master Anaplanner — Connected Planning Consulting",
     description:
-      "Stop wasting weeks in broken Excel sheets. Transform Finance, HR, and Cost Planning into a unified, automated forecasting powerhouse.",
+      "Stop wasting weeks in broken Excel sheets. Transform Finance, Workforce, Opex, and Capex Planning into a unified, automated forecasting powerhouse.",
     type: "website",
   },
 };
@@ -48,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${body.variable} ${display.variable}`}>
+    <html lang="en" className={`${body.variable} ${display.variable} ${mono.variable}`}>
       <body className="min-h-screen font-body antialiased">{children}</body>
     </html>
   );

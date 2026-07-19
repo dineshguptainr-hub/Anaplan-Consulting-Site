@@ -4,16 +4,16 @@ const STATS = [
   { stat: "6+ Yrs", label: "Anaplan Architecture" },
   { stat: "Master", label: "Anaplanner Certified" },
   { stat: "4+", label: "End-to-End Global Rollouts" },
-  { stat: "3 Domains", label: "Finance · HR · Cost" },
+  { stat: "4 Domains", label: "Finance · Workforce · Opex · Capex" },
 ];
 
 const HEX_CLIP = "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
 
 const CAPABILITY_NODES = [
-  { label: "Strategy & Selection", dx: 0, dy: -101 },
-  { label: "Financial Modeling", dx: 88, dy: -50.5 },
-  { label: "Cost & HR Planning", dx: 88, dy: 50.5 },
-  { label: "Workflow Automation", dx: 0, dy: 101 },
+  { label: "Finance Planning", dx: 0, dy: -101 },
+  { label: "Workforce Planning", dx: 88, dy: -50.5 },
+  { label: "Opex Planning", dx: 88, dy: 50.5 },
+  { label: "Capex Planning", dx: 0, dy: 101 },
 ];
 
 const FAINT_NODES = [
@@ -65,8 +65,9 @@ export default function Hero() {
 
           <p className="animate-fade-up mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-ink-500 [animation-delay:160ms]">
             Stop wasting weeks manually consolidating broken Excel sheets.
-            Let a certified Master Anaplanner transform your Finance, HR, and
-            Cost Planning into a unified, automated forecasting powerhouse.
+            Let a certified Master Anaplanner transform your Finance,
+            Workforce, Opex, and Capex Planning into a unified, automated
+            forecasting powerhouse.
           </p>
 
           <div className="animate-fade-up mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row [animation-delay:240ms]">
@@ -184,9 +185,13 @@ export default function Hero() {
                 />
                 <div className="relative flex h-full w-full items-center justify-center px-2 text-center">
                   <span className="font-mono text-[13px] font-semibold leading-tight text-white">
-                    Connected Model
+                    Connected
+                    <br />
+                    Model
                     <span className="mt-1.5 block text-[9px] font-normal uppercase tracking-normal text-white/70">
-                      One Source of Truth
+                      One Source
+                      <br />
+                      of Truth
                     </span>
                   </span>
                 </div>
