@@ -81,6 +81,8 @@ Everything below is defined once in [app/globals.css](app/globals.css) and reuse
 
 **Fixed-geometry visuals scale, they don't reflow.** `ConnectedHoneycomb` (300px stage) and `SpreadsheetChaos` (absolutely-positioned file stack) keep exact geometry and shrink via `scale()` on a fixed-size wrapper. `WorkflowDemo` is different: its 760×400 desktop org chart has a *separate* stacked-timeline tree below **`lg` (1024px)**, swapped with `hidden lg:flex` / `lg:hidden` — **CSS, not `matchMedia`**, so there is no hydration mismatch. Both trees read one shared state object.
 
+**Known limitation — `WorkflowDemo` on mobile.** That stacked-timeline tree is a stopgap, not the intended design: it discards the org-chart shape, and the hierarchy (Analysts → Managers → Head) is the governance story the section exists to tell. The agreed replacement is to keep **one** chart at every breakpoint and let it scroll horizontally below `lg`, deleting the stacked tree entirely. Don't "improve" the stacked list — it is meant to go. Two things not to do when replacing it: don't rewrite the state machine or timer ladder (both are sound), and don't scale the chart to fit a phone (at 375px that lands near `0.43` scale and the 12px card text becomes unreadable).
+
 **Motion has a reduced-motion path everywhere.** [components/Reveal.tsx](components/Reveal.tsx) renders visible immediately, the carousel freezes on slide 1, `WorkflowDemo` jumps straight to the completed end state, and the flow/hover classes drop their animation and transform. `Reveal` also starts children at `opacity: 0`, so a `<noscript>` rule in `app/layout.tsx` forces `[data-reveal]` visible when JS is unavailable — keep that in sync if the reveal mechanism changes.
 
 **`<body>` carries `suppressHydrationWarning`.** Browser extensions (Grammarly and friends) inject attributes like `data-gr-ext-installed` before React hydrates, which otherwise reports as a hydration mismatch. It suppresses that one element's attribute diff only, so genuine hydration bugs in children still surface.
@@ -88,6 +90,12 @@ Everything below is defined once in [app/globals.css](app/globals.css) and reuse
 **`section[id]` carries `scroll-margin-top`** in `globals.css` so in-page anchors clear the sticky header. New anchor targets should be `<section id="…">` to inherit it.
 
 **`app/icon.tsx`** generates a dynamic `/icon` route, but the explicit `metadata.icons` in `app/layout.tsx` takes precedence, so the static set in `public/` is what actually ships. The dynamic route is currently unreferenced.
+
+## Deployment
+
+Vercel auto-deploys this repo from GitHub. **Pushing to `master` publishes the live site** — treat it as a release, not a save. Pushing any other branch produces a private preview deployment instead, which is the safe way to check a change on a real domain before it goes public.
+
+There is no `.vercel` directory in the repo and the `gh` CLI is not installed, so opening PRs and watching builds happen in the browser rather than from the terminal.
 
 ## Verifying changes
 
