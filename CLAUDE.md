@@ -25,13 +25,19 @@ Three routes compose section components from `components/`; every page shares `H
 | [app/services/page.tsx](app/services/page.tsx) | `PainPleasure → ServicesGrid → Capabilities → CtaBand` |
 | [app/contact/page.tsx](app/contact/page.tsx) | `ContactSection` |
 
-The two interactive proof pieces (`ConnectedHoneycomb`, `WorkflowDemo`) live on the **home** page deliberately — they are the site's main differentiator and were placed there so visitors reach them without a click. Don't relocate them to `/services` without a reason.
+`/` is the landing page (the "Escape Spreadsheet Hell" hero). The two interactive proof pieces (`ConnectedHoneycomb`, `WorkflowDemo`) live on **home** deliberately — they are the site's main differentiator and were placed there so visitors reach them without a click. Don't relocate them to `/services` without a reason.
 
 **Route-based nav**: `NAV_LINKS` in [components/Header.tsx](components/Header.tsx) and the array in [components/Footer.tsx](components/Footer.tsx) both use `next/link` to `/`, `/services`, `/contact` — real navigations, not hash anchors. Moving a section between pages means updating both nav arrays and the page imports.
 
-**Content-as-data**: each section keeps repeatable content in a top-of-file array that JSX maps over (`BEFORE_ITEMS`/`AFTER_ITEMS`, `CAPABILITIES`, `SERVICES`, `MODELS`, `LEDGER`, `TOOL_OPTIONS`, …). Edit those arrays to change copy rather than touching the surrounding markup.
+**Content-as-data**: each section keeps repeatable content in a top-of-file array that JSX maps over (`BEFORE_ITEMS`/`AFTER_ITEMS`, `CAPABILITIES`, `SERVICES`, `MODELS`, `PROMISES`, `TOOL_OPTIONS`, …). Edit those arrays to change copy rather than touching the surrounding markup.
 
 **Client vs server components**: most sections are server components. The client ones (`"use client"`) are `Header` (mobile menu + `usePathname`), `Reveal`, `CredentialCarousel`, `ConnectedHoneycomb`, `WorkflowDemo`, and `ContactForm`. Keep new sections server-rendered unless they genuinely need state.
+
+### The journey section
+
+[components/ConnectedHoneycomb.tsx](components/ConnectedHoneycomb.tsx) is not just the honeycomb — it renders a **before/after pair**: `SpreadsheetChaos` (five scattered `.xlsx` files on ruled grid paper) on the left, the clickable six-model honeycomb on the right, joined by a flowing dashed `Seam` that rotates from horizontal to vertical when the panels stack below `lg`.
+
+[components/SpreadsheetChaos.tsx](components/SpreadsheetChaos.tsx) is a bare 440×400 stage with no card or caption of its own — the journey panel supplies those. It is used **only** here; it was deliberately removed from `PainPleasure` so the same illustration doesn't run on two pages.
 
 ### Contact form → Google Sheets
 
@@ -43,21 +49,41 @@ The Apps Script source to paste into the Sheet's editor (Extensions → Apps Scr
 
 ### Styling system
 
-- **Tokens** in [tailwind.config.ts](tailwind.config.ts): `trust` (primary blue, 600 = `#2563A8`), `ember` (orange accent), `success` (workflow "submitted"/"accepted" states), `alert`, plus `ink`/`paper`/`surface`/`cream` neutrals, and `hero-glow` / `grid-fade` / `ledger-grid` background images.
-- **Component classes** composed with `@apply` in [app/globals.css](app/globals.css): `.btn-primary`, `.btn-secondary`, `.card`, `.container-max`, `.eyebrow`, `.section-heading`, `.ledger-panel`, `.status-pill`. Prefer these over new one-off utility strings.
-- **Fonts**: Libre Franklin (display), Source Sans 3 (body), IBM Plex Mono (stat figures and eyebrow labels) — loaded via `next/font/google` in [app/layout.tsx](app/layout.tsx) as `--font-display`/`--font-body`/`--font-mono`, mapped to `font-display`/`font-body`/`font-mono`.
+- **Tokens** in [tailwind.config.ts](tailwind.config.ts): `trust` (primary blue, 600 = `#2563A8`, 700 = `#1A4780`), `ember` (orange accent), `success` (workflow "submitted"/"accepted" states), `alert`, plus `ink`/`paper`/`surface`/`cream` neutrals, `hero-glow` / `grid-fade` / `ledger-grid` background images, and `float1`/`float2` drift keyframes.
+- **Fonts**: Libre Franklin (display), Source Sans 3 (body), IBM Plex Mono (stat figures and eyebrow labels) — loaded via `next/font/google` in [app/layout.tsx](app/layout.tsx) as `--font-display`/`--font-body`/`--font-mono`.
 - **Sections alternate `bg-paper` and `bg-surface`** down each page. Keep the alternation when adding a section; two adjacent white sections flatten the page.
 - **Path alias**: `@/*` maps to the project root (see [tsconfig.json](tsconfig.json)).
+
+### Shared visual language
+
+Everything below is defined once in [app/globals.css](app/globals.css) and reused site-wide. Prefer these over new one-off utility strings — the site reads as one system precisely because sections don't reinvent them.
+
+| Class | Purpose |
+|---|---|
+| `.btn-primary` `.btn-secondary` `.card` `.container-max` `.eyebrow` `.section-heading` `.ledger-panel` `.status-pill` | base `@apply` component classes |
+| `.hex-tile` | pointy-top hexagon clip — the site's icon shape |
+| `.hex-tile--hover` | on a `group` parent: fills ember, scales 1.1 on hover/focus |
+| `.card-lift` | lifts 4px, warms border, deepens shadow on hover |
+| `.flow-line` + `--moving` / `--settled` | SVG dashed pipe that flows toward its destination, then goes solid |
+| `.flow-spine` | vertical CSS sibling of `.flow-line`, same 6/6 dash rhythm |
+
+**The flowing-dash motion is one deliberate language**, not scattered effects: it represents data moving through connected pipes, which is literally the product. It drives the journey seam, the ERP/GL → Data Hub pipes, and the contact page's node spine. Reuse it rather than inventing new motion.
+
+[components/HexAmbience.tsx](components/HexAmbience.tsx) supplies the drifting-hex background behind most sections (`variant="dark"` for navy panels). It is intentionally **not** on the credential carousel or strip — those are thin bands where it reads as noise.
 
 ## Gotchas worth knowing
 
 **`@apply` component classes beat display utilities.** The classes in `globals.css` are declared *after* `@tailwind utilities`, so at equal specificity they win. `className="btn-primary hidden"` renders visible — you must write `!hidden` / `sm:!inline-flex`. This is why `!px-5`-style overrides already appear throughout the codebase.
 
-**The honeycomb geometry is a coupled triple.** In [components/ConnectedHoneycomb.tsx](components/ConnectedHoneycomb.tsx), the `94×108` cell size, the `RING` offsets, and the pointy-top `HEX_CLIP` only tile correctly together (horizontal neighbours one width apart, diagonals at `w/2, h*0.75`). Changing one without the others produces overlapping cells — that was a real shipped bug. The hub is deliberately a shade darker (`trust-700`) and inset to `scale(0.92)` so it stays distinct from whichever model hex is active.
+**The honeycomb geometry is a coupled triple.** In `ConnectedHoneycomb`, the `94×108` cell size, the `RING` offsets, and the pointy-top `HEX_CLIP` only tile correctly together (horizontal neighbours one width apart, diagonals at `w/2, h*0.75`). Changing one without the others produces overlapping cells — a real shipped bug. The hub renders at **full size so it tiles flush with the ring** (no gap, no overlap) and stays distinct from the active model by colour alone: `trust-700` navy hub vs `trust-600` active hex. Don't reintroduce a scale inset to separate them.
 
-**Fixed-geometry visuals scale, they don't reflow.** `ConnectedHoneycomb` (300px stage) and `SpreadsheetChaos` (absolutely-positioned file stack) keep exact geometry and shrink via `scale()` on a fixed-size wrapper. `WorkflowDemo` is different: its 760×400 desktop org chart has a *separate* stacked-timeline tree below `lg`, swapped with `hidden lg:block` / `lg:hidden` — **CSS, not `matchMedia`**, so there is no hydration mismatch. Both trees read one shared state object.
+**`WorkflowDemo`'s org-chart connectors are hard-coded coordinates coupled to card heights.** `CONNECTORS` is a list of `[left, top, width, height]` segments. The stub under the head card starts at the card's bottom edge, so the head card is given a **fixed height** (`h-[78px]`) and extra width. When its status text grew to two lines, the card overlapped the stub and the connector visually vanished — if you change that card's content or size, re-check the geometry.
 
-**Motion has a reduced-motion path everywhere.** [components/Reveal.tsx](components/Reveal.tsx) renders visible immediately, the carousel freezes on slide 1, and `WorkflowDemo` jumps straight to the completed end state instead of animating. `Reveal` also starts children at `opacity: 0`, so a `<noscript>` rule in [app/layout.tsx](app/layout.tsx) forces `[data-reveal]` visible when JS is unavailable — keep that in sync if the reveal mechanism changes.
+**Fixed-geometry visuals scale, they don't reflow.** `ConnectedHoneycomb` (300px stage) and `SpreadsheetChaos` (absolutely-positioned file stack) keep exact geometry and shrink via `scale()` on a fixed-size wrapper. `WorkflowDemo` is different: its 760×400 desktop org chart has a *separate* stacked-timeline tree below **`lg` (1024px)**, swapped with `hidden lg:flex` / `lg:hidden` — **CSS, not `matchMedia`**, so there is no hydration mismatch. Both trees read one shared state object.
+
+**Motion has a reduced-motion path everywhere.** [components/Reveal.tsx](components/Reveal.tsx) renders visible immediately, the carousel freezes on slide 1, `WorkflowDemo` jumps straight to the completed end state, and the flow/hover classes drop their animation and transform. `Reveal` also starts children at `opacity: 0`, so a `<noscript>` rule in `app/layout.tsx` forces `[data-reveal]` visible when JS is unavailable — keep that in sync if the reveal mechanism changes.
+
+**`<body>` carries `suppressHydrationWarning`.** Browser extensions (Grammarly and friends) inject attributes like `data-gr-ext-installed` before React hydrates, which otherwise reports as a hydration mismatch. It suppresses that one element's attribute diff only, so genuine hydration bugs in children still surface.
 
 **`section[id]` carries `scroll-margin-top`** in `globals.css` so in-page anchors clear the sticky header. New anchor targets should be `<section id="…">` to inherit it.
 
@@ -65,4 +91,10 @@ The Apps Script source to paste into the Sheet's editor (Extensions → Apps Scr
 
 ## Verifying changes
 
-`npm run build` catches type errors but not layout regressions. For visual work, run the dev server and check at **375 / 768 / 1440** — confirm no horizontal body scroll, that `WorkflowDemo` swaps to the stacked timeline below 768, and that a full "Run Forecast Cycle" completes (~6.2s) through the completion banner. Re-running mid-cycle should reset cleanly; navigating away mid-cycle should not warn about state updates after unmount.
+`npm run build` catches type errors but not layout regressions. For visual work, run the dev server and check at **375 / 768 / 1440**:
+
+- No horizontal body scroll on any route.
+- `WorkflowDemo` swaps to the stacked timeline below **1024px**.
+- A full "Run Forecast Cycle" completes (~6.2s) through the completion banner, with the ERP/GL pipes going grey → flowing blue → solid green. Re-running mid-cycle should reset cleanly; navigating away mid-cycle should not warn about state updates after unmount.
+- The honeycomb hub touches all six models with no gap and no overlap.
+- Hovering any icon tile fills it ember and scales it — this should behave identically on all three pages.

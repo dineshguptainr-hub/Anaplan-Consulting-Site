@@ -1,3 +1,5 @@
+import HexAmbience from "./HexAmbience";
+
 const CAPABILITIES = [
   {
     label: "Strategic Selection",
@@ -60,8 +62,9 @@ const CAPABILITIES = [
 
 export default function Capabilities() {
   return (
-    <section id="capabilities" className="bg-surface py-24">
-      <div className="container-max">
+    <section id="capabilities" className="relative overflow-hidden bg-surface py-24">
+      <HexAmbience />
+      <div className="container-max relative">
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow justify-center">Core Capabilities</span>
           <h2 className="section-heading mt-4">
@@ -78,12 +81,12 @@ export default function Capabilities() {
           {CAPABILITIES.map((cap, i) => (
             <div
               key={cap.label}
-              className="card group relative overflow-hidden p-8 transition hover:border-trust-600/30"
+              className="card card-lift group relative overflow-hidden p-8"
             >
               <span className="absolute right-6 top-6 font-display text-5xl font-semibold text-ink-900/[0.05]">
                 0{i + 1}
               </span>
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-trust-100 text-trust-600">
+              <span className="hex-tile hex-tile--hover flex h-11 w-11 items-center justify-center bg-trust-100 text-trust-600">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                   {cap.icon}
                 </svg>

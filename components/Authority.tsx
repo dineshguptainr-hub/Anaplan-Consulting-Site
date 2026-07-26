@@ -1,3 +1,5 @@
+import HexAmbience from "./HexAmbience";
+
 const STATS = [
   {
     value: "6+",
@@ -66,6 +68,7 @@ export default function Authority() {
     // Paper, not white: WorkflowDemo above is white, and two adjacent white
     // sections flatten the page's alternating rhythm.
     <section id="about" className="relative overflow-hidden bg-paper py-24">
+      <HexAmbience />
       <div className="container-max relative">
         <div className="grid gap-14 lg:grid-cols-2 lg:items-start">
           <div>
@@ -107,7 +110,7 @@ export default function Authority() {
               ].map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-ink-900/10 bg-surface px-4 py-1.5 text-xs font-semibold text-ink-700"
+                  className="cursor-default rounded-full border border-ink-900/10 bg-surface px-4 py-1.5 text-xs font-semibold text-ink-700 transition-colors duration-300 hover:border-ember-600 hover:bg-ember-600 hover:text-white"
                 >
                   {tag}
                 </span>
@@ -117,8 +120,8 @@ export default function Authority() {
 
           <div className="space-y-6">
             {PILLARS.map((pillar) => (
-              <div key={pillar.title} className="flex gap-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-trust-600 text-white">
+              <div key={pillar.title} className="group flex cursor-default gap-4">
+                <span className="hex-tile hex-tile--hover flex h-10 w-10 shrink-0 items-center justify-center bg-trust-600 text-white">
                   <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
                     {pillar.icon}
                   </svg>
@@ -138,7 +141,7 @@ export default function Authority() {
               {STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl border border-ink-900/[0.08] bg-surface p-5"
+                  className="card-lift cursor-default rounded-xl border border-ink-900/[0.08] bg-surface p-5"
                 >
                   <div className="font-mono text-2xl font-bold text-trust-600">
                     {stat.value}

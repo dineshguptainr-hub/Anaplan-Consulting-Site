@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HexAmbience from "./HexAmbience";
 
 const STATS = [
   { stat: "6+ Yrs", label: "Anaplan Architecture" },
@@ -13,9 +14,7 @@ export default function Hero() {
       id="top"
       className="relative overflow-hidden bg-paper bg-hero-glow pb-20 pt-20 sm:pt-28"
     >
-      {/* ambient drift */}
-      <div className="pointer-events-none absolute -top-16 right-[8%] h-56 w-56 animate-float1 rounded-full bg-[radial-gradient(circle,rgba(37,99,168,0.10),transparent_70%)]" />
-      <div className="pointer-events-none absolute bottom-0 left-[6%] h-48 w-48 animate-float2 rounded-full bg-[radial-gradient(circle,rgba(242,98,46,0.08),transparent_70%)]" />
+      <HexAmbience />
 
       <div className="container-max relative">
         <div className="mx-auto max-w-4xl text-center">

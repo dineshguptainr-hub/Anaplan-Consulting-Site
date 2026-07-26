@@ -1,5 +1,4 @@
-import Reveal from "./Reveal";
-import SpreadsheetChaos from "./SpreadsheetChaos";
+import HexAmbience from "./HexAmbience";
 
 const BEFORE_ITEMS = [
   {
@@ -59,8 +58,9 @@ const AFTER_ITEMS = [
 
 export default function PainPleasure() {
   return (
-    <section id="transformation" className="bg-paper py-24">
-      <div className="container-max">
+    <section id="transformation" className="relative overflow-hidden bg-paper py-24">
+      <HexAmbience />
+      <div className="container-max relative">
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow justify-center">The Transformation</span>
           <h2 className="section-heading mt-4">
@@ -73,16 +73,12 @@ export default function PainPleasure() {
           </p>
         </div>
 
-        <Reveal className="mx-auto mt-14 max-w-2xl">
-          <SpreadsheetChaos />
-        </Reveal>
-
-        <div className="mt-14 grid gap-6 lg:grid-cols-2">
+        <div className="mt-16 grid gap-6 lg:grid-cols-2">
           {/* BEFORE */}
-          <div className="card relative overflow-hidden p-8">
+          <div className="card card-lift group relative overflow-hidden p-8">
             <div className="absolute inset-x-0 top-0 h-1 bg-alert-600/70" />
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-alert-100 text-alert-600">
+              <span className="hex-tile hex-tile--hover flex h-10 w-10 items-center justify-center bg-alert-100 text-alert-600">
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                   <path
                     d="M10 6v5m0 3h.01M8.6 2.9 1.7 15a2 2 0 0 0 1.7 3h13.2a2 2 0 0 0 1.7-3L11.4 2.9a2 2 0 0 0-3.4 0Z"
@@ -134,10 +130,10 @@ export default function PainPleasure() {
           </div>
 
           {/* AFTER */}
-          <div className="card relative overflow-hidden p-8 ring-1 ring-trust-600/20">
+          <div className="card card-lift group relative overflow-hidden p-8 ring-1 ring-trust-600/20">
             <div className="absolute inset-x-0 top-0 h-1 bg-trust-600/80" />
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-trust-100 text-trust-600">
+              <span className="hex-tile hex-tile--hover flex h-10 w-10 items-center justify-center bg-trust-100 text-trust-600">
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                   <path
                     d="M10 2 3 6v5c0 4 3 6.5 7 7 4-.5 7-3 7-7V6l-7-4Z"

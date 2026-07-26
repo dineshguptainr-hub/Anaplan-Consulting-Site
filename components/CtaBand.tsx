@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HexAmbience from "./HexAmbience";
 
 const PROMISES = [
   { label: "Response", value: "Within 1 business day" },
@@ -10,7 +11,9 @@ export default function CtaBand() {
   return (
     <section className="bg-paper pb-24 pt-4">
       <div className="container-max">
-        <div className="overflow-hidden rounded-2xl bg-trust-700 px-8 py-12 text-center shadow-lift sm:px-12">
+        <div className="relative overflow-hidden rounded-2xl bg-trust-700 px-8 py-12 text-center shadow-lift sm:px-12">
+          <HexAmbience variant="dark" />
+          <div className="relative">
           <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-[34px]">
             Ready to modernize your planning?
           </h2>
@@ -46,6 +49,7 @@ export default function CtaBand() {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         </div>
       </div>

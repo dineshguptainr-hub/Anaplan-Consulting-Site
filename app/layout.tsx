@@ -86,7 +86,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${body.variable} ${display.variable} ${mono.variable}`}>
-      <body className="min-h-screen font-body antialiased">
+      {/* suppressHydrationWarning: browser extensions (Grammarly and friends)
+          inject attributes like data-gr-ext-installed onto <body> before React
+          hydrates, which otherwise reports as a hydration mismatch. This
+          suppresses that one element's attribute diff only, not its children. */}
+      <body className="min-h-screen font-body antialiased" suppressHydrationWarning>
         {/* Reveal starts its children at opacity 0 and relies on JS to show
             them. Without this, a JS failure renders those sections blank. */}
         <noscript>

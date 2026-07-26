@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import HexAmbience from "./HexAmbience";
 
 type Stage = "idle" | "syncing" | "synced" | "notifying" | "running" | "done";
 
@@ -44,12 +45,16 @@ const ALL_SUBMITTED: Record<string, boolean> = {
   b2: true,
 };
 
-/** Connector segments of the desktop org chart, as [left, top, width, height]. */
+/**
+ * Connector segments of the desktop org chart, as [left, top, width, height].
+ * These depend on HEAD_H below: the stub under the head card must start at the
+ * card's bottom edge, or it renders hidden behind the card.
+ */
 const CONNECTORS: [number, number, number, number][] = [
-  [394, 70, 2, 30],
-  [194, 100, 401, 2],
-  [193, 100, 2, 30],
-  [594, 100, 2, 30],
+  [394, 78, 2, 26],
+  [194, 104, 401, 2],
+  [193, 104, 2, 26],
+  [594, 104, 2, 26],
   [193, 210, 2, 24],
   [594, 210, 2, 24],
   [60, 234, 268, 2],
@@ -151,6 +156,17 @@ export default function WorkflowDemo() {
         ? "Restart Demo"
         : "Running…";
 
+  // Pipe states: idle = dormant dashes, syncing = dashes flowing toward the
+  // hub, everything after = landed and solid.
+  const piping = stage === "syncing";
+  const piped = stage !== "idle" && stage !== "syncing";
+  const pipeStroke = piped ? "#2F6E50" : piping ? "#2563A8" : "#D0D5DD";
+  const pipeClass = piped
+    ? "flow-line flow-line--settled"
+    : piping
+      ? "flow-line flow-line--moving"
+      : "flow-line";
+
   function analystStatus(a: Analyst) {
     const isSubmitted = submitted[a.key];
     const isRunning = running && !isSubmitted;
@@ -188,7 +204,7 @@ export default function WorkflowDemo() {
   }
 
   const headStatus = headReviewed
-    ? { text: "✓ Reviewed forecast numbers", className: "text-success-600" }
+    ? { text: "✓ Reviewed & Approved", className: "text-success-600" }
     : notify
       ? { text: "Awaiting manager sign-off", className: "text-trust-700" }
       : { text: "Awaiting forecast cycle", className: "text-ink-400" };
@@ -266,9 +282,10 @@ export default function WorkflowDemo() {
   return (
     <section
       id="workflow"
-      className="border-y border-ink-900/[0.08] bg-surface py-24"
+      className="relative overflow-hidden border-y border-ink-900/[0.08] bg-surface py-24"
     >
-      <div className="container-max">
+      <HexAmbience />
+      <div className="container-max relative">
         <div className="mx-auto max-w-[640px] text-center">
           <span className="eyebrow justify-center">See It In Action</span>
           <h2 className="section-heading mt-4">
@@ -307,30 +324,72 @@ export default function WorkflowDemo() {
             ))}
           </div>
 
+          {/* The pipes. Dashes flow toward the hub while the sync runs, then
+              go solid green once the data has landed. Labelled with the actual
+              mechanism so the diagram states how, not just that. */}
           <svg
-            viewBox="0 0 160 120"
-            className="hidden h-[120px] w-[160px] shrink-0 md:block"
+            viewBox="0 0 240 160"
+            className="hidden h-[160px] w-[240px] shrink-0 md:block"
             aria-hidden
           >
-            <path d="M0,29 L88,60" fill="none" stroke="rgba(28,36,48,0.22)" strokeWidth="2" />
-            <path d="M0,91 L88,60" fill="none" stroke="rgba(28,36,48,0.22)" strokeWidth="2" />
-            <path d="M88,60 L160,60" fill="none" stroke="#2563A8" strokeWidth="3" />
-          </svg>
-
-          <svg
-            viewBox="0 0 24 44"
-            className="h-11 w-6 shrink-0 md:hidden"
-            aria-hidden
-          >
+            <text
+              x="4"
+              y="20"
+              className="fill-ink-500 font-mono"
+              style={{ fontSize: 9 }}
+            >
+              Anaplan Connect (API)
+            </text>
             <path
-              d="M12 0 L12 36 M5 29 L12 37 L19 29"
+              d="M8,34 C80,34 100,80 238,80"
               fill="none"
-              stroke="#2563A8"
               strokeWidth="2.5"
               strokeLinecap="round"
-              strokeLinejoin="round"
+              stroke={pipeStroke}
+              className={pipeClass}
             />
+
+            <path
+              d="M8,126 C80,126 100,80 238,80"
+              fill="none"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              stroke={pipeStroke}
+              className={pipeClass}
+            />
+            <text
+              x="4"
+              y="150"
+              className="fill-ink-500 font-mono"
+              style={{ fontSize: 9 }}
+            >
+              Anaplan ADO
+            </text>
           </svg>
+
+          <div className="flex flex-col items-center gap-1 md:hidden">
+            <svg viewBox="0 0 24 44" className="h-11 w-6 shrink-0" aria-hidden>
+              <path
+                d="M12 2 V34"
+                fill="none"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                stroke={pipeStroke}
+                className={pipeClass}
+              />
+              <path
+                d="M6 30 L12 38 L18 30"
+                fill="none"
+                stroke={pipeStroke}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="font-mono text-[10px] text-ink-500">
+              Anaplan Connect (API) · ADO
+            </span>
+          </div>
 
           <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-ember-600 p-2 text-center font-display text-[13px] font-bold text-white">
             Anaplan Data Hub
@@ -390,7 +449,9 @@ export default function WorkflowDemo() {
               />
             ))}
 
-            <div className="absolute left-[310px] top-0 w-[170px]">
+            {/* Fixed height so the connector stub under it lands at a known
+                y. Wider than the manager cards so the status fits one line. */}
+            <div className="absolute left-[295px] top-0 h-[78px] w-[200px]">
               <HeadCard />
             </div>
             <div className="absolute left-[109px] top-[130px] w-[170px]">

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import HexAmbience from "./HexAmbience";
+import SpreadsheetChaos from "./SpreadsheetChaos";
 
 /**
  * Pointy-top hexagon. Paired with the 94x108 cell size and the ring offsets
@@ -56,12 +58,67 @@ const MODELS = [
   },
 ];
 
+/** The transition between the two panels: a flowing pipe, horizontal on
+ *  desktop and vertical once the panels stack. */
+function Seam() {
+  return (
+    <>
+      <svg
+        viewBox="0 0 80 24"
+        className="hidden h-6 w-20 self-center lg:block"
+        aria-hidden
+      >
+        <path
+          d="M2 12 H62"
+          fill="none"
+          stroke="#2563A8"
+          strokeWidth="2"
+          strokeLinecap="round"
+          className="flow-line flow-line--moving"
+        />
+        <path
+          d="M62 6 L70 12 L62 18"
+          fill="none"
+          stroke="#2563A8"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+
+      <svg
+        viewBox="0 0 24 64"
+        className="h-16 w-6 self-center lg:hidden"
+        aria-hidden
+      >
+        <path
+          d="M12 2 V44"
+          fill="none"
+          stroke="#2563A8"
+          strokeWidth="2"
+          strokeLinecap="round"
+          className="flow-line flow-line--moving"
+        />
+        <path
+          d="M6 44 L12 52 L18 44"
+          fill="none"
+          stroke="#2563A8"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+
 export default function ConnectedHoneycomb() {
   const [active, setActive] = useState(0);
 
   return (
-    <section id="connected" className="bg-paper py-24">
-      <div className="container-max">
+    <section id="connected" className="relative overflow-hidden bg-paper py-24">
+      <HexAmbience />
+      <div className="container-max relative">
         <div className="mx-auto max-w-[640px] text-center">
           <span className="eyebrow justify-center">Connected Planning</span>
           <h2 className="section-heading mt-4">
@@ -74,80 +131,120 @@ export default function ConnectedHoneycomb() {
           </p>
         </div>
 
-        {/* Stage is a fixed 300px square; scaled down rather than reflowed so
-            the honeycomb geometry stays exact at every viewport. */}
-        <div className="mt-14 flex justify-center">
-          <div className="h-[246px] w-[246px] sm:h-[300px] sm:w-[300px]">
-            <div className="relative h-[300px] w-[300px] origin-top-left scale-[0.82] sm:scale-100">
-              {RING.map((pos, i) => (
-                <div
-                  key={`spoke-${pos.angle}`}
-                  aria-hidden
-                  className="absolute left-1/2 top-1/2 z-0 h-0.5 origin-[0_50%] transition-colors duration-200"
-                  style={{
-                    width: SPOKE,
-                    transform: `rotate(${pos.angle}deg)`,
-                    background:
-                      active === i ? "#1A4780" : "rgba(28,36,48,0.16)",
-                  }}
-                />
-              ))}
+        {/* The journey: scattered files on ruled grid paper, flowing into one
+            connected model on clean ground. */}
+        <div className="mt-14 flex flex-col items-center gap-2 lg:flex-row lg:items-stretch lg:justify-center lg:gap-4">
+          {/* BEFORE — spreadsheet sprawl, on spreadsheet ruling */}
+          <div className="card-lift w-full max-w-[420px] overflow-hidden rounded-2xl border border-ink-900/[0.08] bg-white shadow-card lg:flex-1">
+            <div className="flex items-center justify-between border-b border-ink-900/[0.08] px-5 py-3">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-alert-600">
+                Today
+              </span>
+              <span className="font-mono text-[11px] text-ink-400">.xlsx</span>
+            </div>
 
-              {/* Hub sits a shade darker than the active model so the two
-                  never merge into one blob when an adjacent hex is selected. */}
-              <div
-                className="absolute left-1/2 top-1/2 z-20 flex items-center justify-center bg-trust-700 p-2 text-center shadow-hex"
-                style={{
-                  width: HEX_W,
-                  height: HEX_H,
-                  clipPath: HEX_CLIP,
-                  // Slightly inset so a thin paper gap rings the hub, keeping
-                  // it distinct from whichever model is currently active.
-                  transform: "translate(-50%, -50%) scale(0.92)",
-                }}
-              >
-                <span className="font-display text-[12px] font-bold leading-tight text-white">
-                  Anaplan
-                  <br />
-                  Data Hub
-                </span>
+            <div className="bg-ledger-grid flex h-[300px] items-center justify-center overflow-hidden bg-paper [background-size:28px_28px]">
+              <div className="h-[400px] w-[440px] shrink-0 scale-[0.6] sm:scale-[0.68]">
+                <SpreadsheetChaos />
               </div>
+            </div>
 
-              {MODELS.map((model, i) => {
-                const pos = RING[i];
-                const isActive = active === i;
-                return (
-                  <button
-                    key={model.key}
-                    type="button"
-                    onClick={() => setActive(i)}
-                    aria-pressed={isActive}
-                    className="absolute z-10 flex items-center justify-center p-2 text-center transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trust-700"
+            <div className="flex items-center justify-center gap-2 border-t border-ink-900/[0.08] px-5 py-4 text-sm font-medium text-ink-900">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-alert-600" />
+              Five files, one truth? Pick a version.
+            </div>
+          </div>
+
+          <Seam />
+
+          {/* AFTER — one connected model, on clean ground */}
+          <div className="card-lift w-full max-w-[420px] overflow-hidden rounded-2xl border border-ink-900/[0.08] bg-white shadow-card lg:flex-1">
+            <div className="flex items-center justify-between border-b border-ink-900/[0.08] px-5 py-3">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-trust-700">
+                With Anaplan
+              </span>
+              <span className="font-mono text-[11px] text-ink-400">
+                Anaplan Workspace
+              </span>
+            </div>
+
+            <div className="flex h-[300px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(37,99,168,0.08),transparent_65%)]">
+              <div className="h-[300px] w-[300px] shrink-0 scale-[0.78] sm:scale-90">
+                <div className="relative h-[300px] w-[300px]">
+                  {RING.map((pos, i) => (
+                    <div
+                      key={`spoke-${pos.angle}`}
+                      aria-hidden
+                      className="absolute left-1/2 top-1/2 z-0 h-0.5 origin-[0_50%] transition-colors duration-200"
+                      style={{
+                        width: SPOKE,
+                        transform: `rotate(${pos.angle}deg)`,
+                        background:
+                          active === i ? "#1A4780" : "rgba(28,36,48,0.16)",
+                      }}
+                    />
+                  ))}
+
+                  {/* Full size so the hub tiles flush against the ring — no
+                      gap, no overlap. It stays distinct from the active model
+                      by colour alone: navy hub vs mid-blue active hex. */}
+                  <div
+                    className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-trust-700 p-2 text-center shadow-hex"
                     style={{
                       width: HEX_W,
                       height: HEX_H,
                       clipPath: HEX_CLIP,
-                      left: `calc(50% + ${pos.x}px)`,
-                      top: `calc(50% + ${pos.y}px)`,
-                      transform: `translate(-50%, -50%) scale(${isActive ? 1.1 : 1})`,
-                      background: isActive ? "#2563A8" : "#E8791B",
-                      boxShadow: isActive
-                        ? "0 12px 26px rgba(0,0,0,0.2)"
-                        : "0 4px 10px rgba(0,0,0,0.08)",
                     }}
                   >
-                    <span className="text-[12.5px] font-bold leading-tight text-white">
-                      {model.label}
+                    <span className="font-display text-[12px] font-bold leading-tight text-white">
+                      Anaplan
+                      <br />
+                      Data Hub
                     </span>
-                  </button>
-                );
-              })}
+                  </div>
+
+                  {MODELS.map((model, i) => {
+                    const pos = RING[i];
+                    const isActive = active === i;
+                    return (
+                      <button
+                        key={model.key}
+                        type="button"
+                        onClick={() => setActive(i)}
+                        aria-pressed={isActive}
+                        className="absolute z-10 flex items-center justify-center p-2 text-center transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trust-700"
+                        style={{
+                          width: HEX_W,
+                          height: HEX_H,
+                          clipPath: HEX_CLIP,
+                          left: `calc(50% + ${pos.x}px)`,
+                          top: `calc(50% + ${pos.y}px)`,
+                          transform: `translate(-50%, -50%) scale(${isActive ? 1.1 : 1})`,
+                          background: isActive ? "#2563A8" : "#E8791B",
+                          boxShadow: isActive
+                            ? "0 12px 26px rgba(0,0,0,0.2)"
+                            : "0 4px 10px rgba(0,0,0,0.08)",
+                        }}
+                      >
+                        <span className="text-[12.5px] font-bold leading-tight text-white">
+                          {model.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 border-t border-ink-900/[0.08] px-5 py-4 text-sm font-medium text-ink-900">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-trust-600" />
+              Six models, one hub. One version of the truth.
             </div>
           </div>
         </div>
 
         <div
-          className="mx-auto mt-7 max-w-[560px] rounded-xl border border-ink-900/[0.08] bg-surface px-6 py-5 text-center"
+          className="mx-auto mt-8 max-w-[560px] rounded-xl border border-ink-900/[0.08] bg-surface px-6 py-5 text-center"
           aria-live="polite"
         >
           <div className="font-display text-[15.5px] font-bold text-trust-700">
