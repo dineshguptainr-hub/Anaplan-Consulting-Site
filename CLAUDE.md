@@ -10,6 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run start` — serve the production build (run `build` first)
 - `npm run lint` — no ESLint config exists in this repo yet, so the first run prompts interactively to create one. In a non-interactive/agent context that prompt is expected, not a failure.
 - No test suite is configured.
+- **Next 16 on React 18**, not React 19 — don't reach for React 19-only APIs.
 
 ## Architecture
 
@@ -46,6 +47,8 @@ Three routes compose section components from `components/`; every page shares `H
 The route reads `GOOGLE_SHEETS_WEBHOOK_URL`. Vercel once defined this as `GOOGLE_SHEETS_WEBHOOKS_URL` (plural), which silently 500-ed the production form; the route carried a fallback accepting both spellings until Vercel was corrected to the singular canonical name.
 
 **The webhook URL is not a credential — the secret is.** A Web App deployed with "Access: Anyone" will write for anybody who holds its URL, and URLs leak (this one sat in `.env.local.example` in a public repo). So every request also carries `CONTACT_WEBHOOK_SECRET`, which the script compares against its `WEBHOOK_SECRET` script property and **fails closed** on: unset property means every submission is refused. Set the script property before deploying a new script version. Apps Script Web Apps always answer HTTP 200, so the route checks `ok` in the response *body* — a 200 is not proof the row landed.
+
+**Debugging the webhook from a terminal is misleading.** A successful `doPost` answers **HTTP 302** to a `script.googleusercontent.com/macros/echo?...` URL, and the JSON body lives at *that* URL — `curl -L` mangles the follow and reports Google's "Page not found" Drive page, which reads exactly like a wrong URL and is not. Fetch the `Location` header, then GET it separately. Two more signals: a thrown script exception renders its error inline with **no** redirect, and a `GET` on this POST-only script answering `Script function not found: doGet` proves the deployment is live and publicly reachable. Also check **Who has access: Anyone** on the deployment — anything stricter returns the same Drive error page to a server-side call.
 
 The Apps Script source to paste into the Sheet's editor (Extensions → Apps Script) is at [scripts/google-apps-script-webhook.gs](scripts/google-apps-script-webhook.gs); it is not built or executed by the Next.js app. `ContactForm` is styled to sit inside the panel `ContactSection` provides, so it carries no card border or padding of its own.
 
@@ -97,9 +100,15 @@ Vercel auto-deploys this repo from GitHub. **Pushing to `master` publishes the l
 
 There is no `.vercel` directory in the repo and the `gh` CLI is not installed, so opening PRs and watching builds happen in the browser rather than from the terminal.
 
+**Vercel bakes environment variables in at build time.** Adding or editing one changes nothing until the project is redeployed (Deployments → ⋮ → Redeploy). This is the first thing to check whenever a config change appears to have had no effect — it cost half an hour of misdiagnosis once, with a broken contact form that looked like a bad webhook URL and was really a build that predated the new variables.
+
 ## Verifying changes
 
-`npm run build` catches type errors but not layout regressions. For visual work, run the dev server and check at **375 / 768 / 1440**:
+`npm run build` catches type errors but not layout regressions. For visual work, run the dev server and check at **375 / 768 / 1440**.
+
+Two things to know when driving a headless browser against the dev server. Client-side effects run **after hydration**, so a measurement taken the moment navigation completes reads pre-hydration values — the `WorkflowDemo` chart reports `scrollLeft: 0` until you wait for network idle, which looks like the centring effect never fired. And the `/browse` daemon does not reliably survive between separate shell invocations here: chain every command (viewport → goto → wait → assert) into **one** call, or the page resets to `about:blank` and selectors come back `null`.
+
+What to check:
 
 - No horizontal body scroll on any route.
 - `WorkflowDemo`'s org chart keeps its shape below **1024px**, scrolling inside its own container (page itself must not scroll sideways) and starting centred on the Head card.
