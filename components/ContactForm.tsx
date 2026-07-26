@@ -77,7 +77,7 @@ export default function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="card flex flex-col items-center gap-4 p-10 text-center">
+      <div className="flex flex-col items-center gap-4 py-6 text-center">
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-trust-100 text-trust-600">
           <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
             <path
@@ -107,7 +107,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="card space-y-5 p-8 sm:p-10">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-ink-700">
@@ -194,8 +194,8 @@ export default function ContactForm() {
         {status === "submitting" ? "Submitting…" : "Book a Strategy Call"}
       </button>
 
-      <p className="text-center text-xs text-ink-500">
-        No spam, no sales sequence. A direct reply from Dinesh, within one
+      <p className="text-center text-xs text-ink-400">
+        No spam, no sales sequence. A direct reply from EPM Journey, within one
         business day.
       </p>
     </form>

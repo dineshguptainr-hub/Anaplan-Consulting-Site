@@ -1,3 +1,6 @@
+import Reveal from "./Reveal";
+import SpreadsheetChaos from "./SpreadsheetChaos";
+
 const BEFORE_ITEMS = [
   {
     title: "Fragile VLOOKUPs & Broken Formulas",
@@ -70,7 +73,11 @@ export default function PainPleasure() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 lg:grid-cols-2">
+        <Reveal className="mx-auto mt-14 max-w-2xl">
+          <SpreadsheetChaos />
+        </Reveal>
+
+        <div className="mt-14 grid gap-6 lg:grid-cols-2">
           {/* BEFORE */}
           <div className="card relative overflow-hidden p-8">
             <div className="absolute inset-x-0 top-0 h-1 bg-alert-600/70" />

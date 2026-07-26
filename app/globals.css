@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --font-display: "Georgia", serif;
+  --font-display: "Helvetica Neue", sans-serif;
   --font-body: system-ui, sans-serif;
   --font-mono: Consolas, monospace;
 }
@@ -12,14 +12,45 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Anchor targets must clear the sticky header, or in-page links land with the
+   heading hidden behind it. */
+section[id] {
+  scroll-margin-top: 88px;
+}
+
 body {
-  background-color: #f6f7f9;
-  color: #17263b;
+  background-color: #f7f8fa;
+  color: #1c2430;
 }
 
 ::selection {
-  background: rgba(29, 78, 137, 0.18);
-  color: #17263b;
+  background: rgba(37, 99, 168, 0.18);
+  color: #1c2430;
+}
+
+/* Baseline keyboard focus. Components that need a different treatment override
+   it; without this, nav links and carousel dots focus invisibly. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #1a4780;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .container-max {
@@ -27,21 +58,31 @@ body {
 }
 
 .eyebrow {
-  @apply inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-trust-600;
+  @apply inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-trust-700;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-md bg-trust-600 px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:bg-trust-500 active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-trust-600 px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:bg-trust-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trust-700 active:scale-[0.98];
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-md border border-ink-900/20 bg-white px-6 py-3.5 text-sm font-semibold text-ink-900 transition hover:border-trust-600/40 hover:bg-trust-100 active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-ink-900/15 bg-white px-6 py-3.5 text-sm font-semibold text-ink-900 transition hover:border-trust-600/40 hover:bg-trust-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trust-700 active:scale-[0.98];
 }
 
 .card {
-  @apply rounded-xl border border-ink-900/10 bg-surface shadow-card;
+  @apply rounded-xl border border-ink-900/[0.08] bg-surface shadow-card;
 }
 
 .section-heading {
-  @apply text-3xl font-semibold tracking-tight text-ink-900 sm:text-4xl;
+  @apply font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl;
+}
+
+.ledger-panel {
+  @apply bg-cream bg-ledger-grid;
+  background-size: 28px 28px;
+}
+
+/* Status pill used by the workflow demo banners. */
+.status-pill {
+  @apply inline-block rounded-full px-4 py-2 text-sm font-semibold;
 }

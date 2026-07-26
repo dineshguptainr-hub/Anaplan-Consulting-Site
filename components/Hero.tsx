@@ -7,67 +7,40 @@ const STATS = [
   { stat: "4 Domains", label: "Finance · Workforce · Opex · Capex" },
 ];
 
-const HEX_CLIP = "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
-
-const CAPABILITY_NODES = [
-  { label: "Finance Planning", dx: 0, dy: -101 },
-  { label: "Workforce Planning", dx: 88, dy: -50.5 },
-  { label: "Opex Planning", dx: 88, dy: 50.5 },
-  { label: "Capex Planning", dx: 0, dy: 101 },
-];
-
-const FAINT_NODES = [
-  { dx: -88, dy: 50.5 },
-  { dx: -88, dy: -50.5 },
-];
-
-const CHAOS_FILES = [
-  { name: "Budget_v1.xlsx", top: 16, left: 24, rotate: -9, bad: [1] },
-  { name: "Q4_Forecast_v2_copy.xlsx", top: 58, left: 236, rotate: 6, bad: [0, 6] },
-  { name: "Budget_v2_edits.xlsx", top: 172, left: 40, rotate: 5, bad: [1, 7] },
-  {
-    name: "Budget_FINAL_v3_useThisOne.xlsx",
-    top: 208,
-    left: 252,
-    rotate: -6,
-    bad: [2, 8],
-  },
-  {
-    name: "Budget_FINAL_v3(2)_ACTUAL.xlsx",
-    top: 332,
-    left: 130,
-    rotate: 7,
-    bad: [3, 4, 10],
-  },
-];
-
 export default function Hero() {
   return (
     <section
       id="top"
-      className="relative overflow-hidden bg-paper bg-hero-glow pb-24 pt-20 sm:pt-28"
+      className="relative overflow-hidden bg-paper bg-hero-glow pb-20 pt-20 sm:pt-28"
     >
+      {/* ambient drift */}
+      <div className="pointer-events-none absolute -top-16 right-[8%] h-56 w-56 animate-float1 rounded-full bg-[radial-gradient(circle,rgba(37,99,168,0.10),transparent_70%)]" />
+      <div className="pointer-events-none absolute bottom-0 left-[6%] h-48 w-48 animate-float2 rounded-full bg-[radial-gradient(circle,rgba(242,98,46,0.08),transparent_70%)]" />
+
       <div className="container-max relative">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
           <div className="animate-fade-up eyebrow justify-center">
             <span className="h-1.5 w-1.5 rounded-full bg-trust-600" />
-            For CFOs &amp; FP&amp;A Leaders Trapped in Spreadsheet Hell
+            Certified Master Anaplanner · Connected Planning Specialists
           </div>
 
-          <h1 className="animate-fade-up mt-6 text-balance font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink-900 sm:text-6xl [animation-delay:80ms]">
+          {/* No text-balance here: it splits "Connected Planning." across two
+              lines, which breaks the underline into two stray rules. The line
+              breaks are set explicitly instead. */}
+          <h1 className="animate-fade-up mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-ink-900 sm:text-6xl [animation-delay:80ms]">
             Escape Spreadsheet Hell.
             <br />
             Graduate to{" "}
-            <span className="border-b-[3px] border-trust-600 pb-0.5">
+            <span className="whitespace-nowrap border-b-[3px] border-trust-600 pb-0.5">
               Connected Planning.
             </span>
           </h1>
 
-          <p className="animate-fade-up mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-ink-500 [animation-delay:160ms]">
-            Stop wasting weeks manually consolidating broken Excel sheets.
-            Let a certified Master Anaplanner transform your Finance,
-            Workforce, Opex, and Capex Planning into a unified, automated
-            forecasting powerhouse.
+          <p className="animate-fade-up mx-auto mt-8 max-w-2xl text-balance text-lg leading-relaxed text-ink-500 [animation-delay:160ms]">
+            Stop wasting weeks manually consolidating broken Excel sheets. A
+            Certified Master Anaplanner and a team of enterprise practitioners
+            turn your Finance, Workforce, Opex, and Capex planning into one
+            unified, automated forecasting engine.
           </p>
 
           <div className="animate-fade-up mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row [animation-delay:240ms]">
@@ -89,12 +62,12 @@ export default function Hero() {
                 />
               </svg>
             </Link>
-            <Link href="/services" className="btn-secondary w-full sm:w-auto">
-              See the Before / After
+            <Link href="#connected" className="btn-secondary w-full sm:w-auto">
+              See How It Works
             </Link>
           </div>
 
-          <p className="animate-fade-up mt-5 text-xs uppercase tracking-[0.14em] text-ink-500 [animation-delay:280ms]">
+          <p className="animate-fade-up mt-5 text-xs uppercase tracking-[0.14em] text-ink-400 [animation-delay:280ms]">
             No sales deck. Just a 30-minute look at what&apos;s breaking your model.
           </p>
         </div>
@@ -111,135 +84,6 @@ export default function Hero() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* hero visual: spreadsheet chaos vs. capability honeycomb */}
-        <div className="animate-fade-up mx-auto mt-16 max-w-5xl overflow-hidden rounded-xl border border-ink-900/10 bg-surface shadow-card [animation-delay:360ms]">
-          <div className="grid sm:grid-cols-2">
-            <div className="relative h-[480px] overflow-hidden border-b border-ink-900/10 sm:border-b-0 sm:border-r">
-              {CHAOS_FILES.map((file) => (
-                <div
-                  key={file.name}
-                  className="absolute w-[160px] rounded border border-ink-900/10 bg-paper shadow-md"
-                  style={{
-                    top: file.top,
-                    left: file.left,
-                    transform: `rotate(${file.rotate}deg)`,
-                  }}
-                >
-                  <div className="flex items-center gap-1.5 border-b border-ink-900/10 px-2 py-1.5">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-alert-600" />
-                    <span className="truncate font-mono text-[8.5px] text-ink-500">
-                      {file.name}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-px bg-ink-900/10 p-1">
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`h-2.5 ${
-                          file.bad.includes(i) ? "bg-alert-600/50" : "bg-paper"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="relative flex h-[480px] items-center justify-center overflow-hidden">
-              <svg
-                viewBox="0 0 300 300"
-                className="pointer-events-none absolute h-[390px] w-[390px]"
-              >
-                {CAPABILITY_NODES.map((n) => (
-                  <line
-                    key={n.label}
-                    x1="150"
-                    y1="150"
-                    x2={150 + n.dx}
-                    y2={150 + n.dy}
-                    stroke="#1D4E89"
-                    strokeWidth="1.5"
-                    opacity="0.5"
-                  />
-                ))}
-                {FAINT_NODES.map((n, i) => (
-                  <line
-                    key={i}
-                    x1="150"
-                    y1="150"
-                    x2={150 + n.dx}
-                    y2={150 + n.dy}
-                    stroke="#D7DCE2"
-                    strokeWidth="1.5"
-                    opacity="0.6"
-                  />
-                ))}
-              </svg>
-
-              <div className="absolute left-1/2 top-1/2 h-[127px] w-[164px] -translate-x-1/2 -translate-y-1/2">
-                <div
-                  className="absolute inset-0 bg-ink-900 shadow-lg"
-                  style={{ clipPath: HEX_CLIP }}
-                />
-                <div className="relative flex h-full w-full items-center justify-center px-2 text-center">
-                  <span className="font-mono text-[13px] font-semibold leading-tight text-white">
-                    Connected
-                    <br />
-                    Model
-                    <span className="mt-1.5 block text-[9px] font-normal uppercase tracking-normal text-white/70">
-                      One Source
-                      <br />
-                      of Truth
-                    </span>
-                  </span>
-                </div>
-              </div>
-
-              {CAPABILITY_NODES.map((n) => (
-                <div
-                  key={n.label}
-                  className="absolute left-1/2 top-1/2 h-[104px] w-[132px]"
-                  style={{
-                    transform: `translate(calc(-50% + ${n.dx}px), calc(-50% + ${n.dy}px))`,
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 bg-trust-600 shadow-md"
-                    style={{ clipPath: HEX_CLIP }}
-                  />
-                  <div className="relative flex h-full w-full items-center justify-center px-2 text-center">
-                    <span className="font-mono text-xs font-semibold leading-tight text-white">
-                      {n.label}
-                    </span>
-                  </div>
-                </div>
-              ))}
-
-              {FAINT_NODES.map((n, i) => (
-                <div
-                  key={i}
-                  className="absolute left-1/2 top-1/2 h-[104px] w-[132px] bg-ink-100 opacity-60"
-                  style={{
-                    clipPath: HEX_CLIP,
-                    transform: `translate(calc(-50% + ${n.dx}px), calc(-50% + ${n.dy}px))`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2 border-t border-ink-900/10 bg-surface px-5 py-4 text-sm font-medium sm:flex-row sm:items-center sm:justify-between">
-            <span className="flex items-center gap-2 text-ink-900">
-              <span className="h-2 w-2 shrink-0 rounded-full bg-alert-600" />
-              Five files, one truth? Pick a version.
-            </span>
-            <span className="flex items-center gap-2 text-ink-900">
-              <span className="h-2 w-2 shrink-0 rounded-full bg-trust-600" />
-              Four capabilities, one honeycomb.
-            </span>
-          </div>
         </div>
       </div>
     </section>

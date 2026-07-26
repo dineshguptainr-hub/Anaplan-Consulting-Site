@@ -13,7 +13,7 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#F6F7F9",
+          background: "#F7F8FA",
         }}
       >
         <div
@@ -23,16 +23,15 @@ export default function Icon() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            border: "2.5px solid #1D4E89",
-            borderRadius: 5,
-            color: "#1D4E89",
+            background: "#2563A8",
+            borderRadius: 7,
+            color: "#FFFFFF",
             fontSize: 12,
             fontWeight: 700,
             fontFamily: "monospace",
-            transform: "rotate(-3deg)",
           }}
         >
-          DG
+          EJ
         </div>
       </div>
     ),

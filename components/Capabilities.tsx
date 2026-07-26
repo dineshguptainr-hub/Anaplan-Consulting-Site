@@ -3,7 +3,7 @@ const CAPABILITIES = [
     label: "Strategic Selection",
     title: "The Right Suite. The Right License Mix.",
     detail:
-      "Before a single model gets built, I guide CFOs through vendor and suite selection — mapping your actual planning complexity to the right Anaplan tier and license structure, so you never overbuy or outgrow your platform in year one.",
+        "Before a single model gets built, we guide CFOs through vendor and suite selection — mapping your actual planning complexity to the right Anaplan tier and license structure, so you never overbuy or outgrow your platform in year one.",
     icon: (
       <path
         d="M4 6h16M4 12h16M4 18h10"
@@ -65,12 +65,12 @@ export default function Capabilities() {
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow justify-center">Core Capabilities</span>
           <h2 className="section-heading mt-4">
-            One consultant. The full planning lifecycle.
+            One team. The full planning lifecycle.
           </h2>
           <p className="mt-4 text-ink-500">
             From choosing the platform to deploying it to your last end user —
             every stage of Connected Planning, handled end-to-end across
-            Finance, HR, and Cost.
+            Finance, Workforce, Opex, and Capex.
           </p>
         </div>
 

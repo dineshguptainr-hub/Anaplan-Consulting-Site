@@ -4,7 +4,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Contact | Dinesh Gupta — Connected Planning Consulting",
+  title: "Contact | EPM Journey — Connected Planning Consulting",
   description:
     "Book a Model Audit and start replacing fragile Excel planning with automated, connected Anaplan models.",
 };
