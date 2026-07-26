@@ -13,15 +13,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid submission." }, { status: 400 });
   }
 
-  // GOOGLE_SHEETS_WEBHOOK_URL is canonical; the plural spelling is accepted
-  // because that is how the variable is currently named in Vercel.
-  const webhookUrl =
-    process.env.GOOGLE_SHEETS_WEBHOOK_URL ??
-    process.env.GOOGLE_SHEETS_WEBHOOKS_URL;
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
   if (!webhookUrl) {
-    console.error(
-      "Neither GOOGLE_SHEETS_WEBHOOK_URL nor GOOGLE_SHEETS_WEBHOOKS_URL is configured.",
-    );
+    console.error("GOOGLE_SHEETS_WEBHOOK_URL is not configured.");
     return NextResponse.json(
       { error: "Form is not configured yet." },
       { status: 500 },

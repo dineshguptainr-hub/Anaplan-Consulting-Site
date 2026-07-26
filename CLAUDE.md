@@ -43,7 +43,7 @@ Three routes compose section components from `components/`; every page shares `H
 
 [components/ContactForm.tsx](components/ContactForm.tsx) holds form state and validation and POSTs JSON to [app/api/contact/route.ts](app/api/contact/route.ts). That server route validates the payload and forwards it to a Google Apps Script Web App, which appends a row to a Sheet. Forwarding server-side keeps the webhook URL out of the client bundle. Without the env var the route returns 500 and the form shows a graceful inline error.
 
-The route reads `GOOGLE_SHEETS_WEBHOOK_URL` **and falls back to `GOOGLE_SHEETS_WEBHOOKS_URL`** (plural) — the plural spelling is what currently exists in Vercel, and the mismatch was silently 500-ing the production form. Once Vercel is renamed to the singular canonical name, the fallback can go.
+The route reads `GOOGLE_SHEETS_WEBHOOK_URL`. Vercel once defined this as `GOOGLE_SHEETS_WEBHOOKS_URL` (plural), which silently 500-ed the production form; the route carried a fallback accepting both spellings until Vercel was corrected to the singular canonical name.
 
 **The webhook URL is not a credential — the secret is.** A Web App deployed with "Access: Anyone" will write for anybody who holds its URL, and URLs leak (this one sat in `.env.local.example` in a public repo). So every request also carries `CONTACT_WEBHOOK_SECRET`, which the script compares against its `WEBHOOK_SECRET` script property and **fails closed** on: unset property means every submission is refused. Set the script property before deploying a new script version. Apps Script Web Apps always answer HTTP 200, so the route checks `ok` in the response *body* — a 200 is not proof the row landed.
 
