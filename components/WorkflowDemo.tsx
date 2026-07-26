@@ -10,7 +10,7 @@ type Analyst = {
   name: string;
   role: string;
   durationMs: number;
-  /** Left offset inside the 760px desktop org chart. */
+  /** Left offset inside the 760px org chart stage. */
   left: number;
 };
 
@@ -46,7 +46,7 @@ const ALL_SUBMITTED: Record<string, boolean> = {
 };
 
 /**
- * Connector segments of the desktop org chart, as [left, top, width, height].
+ * Connector segments of the org chart, as [left, top, width, height].
  * These depend on HEAD_H below: the stub under the head card must start at the
  * card's bottom edge, or it renders hidden behind the card.
  */
@@ -75,6 +75,15 @@ export default function WorkflowDemo() {
   const [headReviewed, setHeadReviewed] = useState(false);
 
   const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const chartScroll = useRef<HTMLDivElement | null>(null);
+
+  // Below lg the 760px chart is wider than the viewport. Start it centred so
+  // the Head card — the top of the hierarchy — is on screen on first paint
+  // instead of parked off to the right. No-op at lg, where nothing overflows.
+  useEffect(() => {
+    const el = chartScroll.current;
+    if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+  }, []);
 
   const clearAll = useCallback(() => {
     timeouts.current.forEach(clearTimeout);
@@ -437,9 +446,22 @@ export default function WorkflowDemo() {
           Analysts submit numbers → Managers accept → Head reviews the forecast
         </p>
 
-        {/* desktop org chart — exact geometry, shown where 760px fits */}
-        <div className="mt-5 hidden justify-center lg:flex">
-          <div className="relative h-[400px] w-[760px]">
+        <p className="mt-2 text-center font-mono text-[11px] text-ink-400 lg:hidden">
+          ← Swipe to see the full chart →
+        </p>
+
+        {/* One org chart at every breakpoint. Below lg the 760px stage neither
+            reflows nor scales — it bleeds to the viewport edges and scrolls
+            horizontally, so the Analysts → Managers → Head shape (the whole
+            point of the diagram) survives on a phone. */}
+        <div
+          ref={chartScroll}
+          className="-mx-6 mt-5 overflow-x-auto px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:flex lg:justify-center lg:overflow-x-visible lg:px-0"
+          role="group"
+          aria-label="Forecast cycle approval hierarchy"
+          tabIndex={0}
+        >
+          <div className="relative h-[400px] w-[760px] shrink-0">
             {CONNECTORS.map(([left, top, width, height]) => (
               <div
                 key={`${left}-${top}-${width}-${height}`}
@@ -480,30 +502,6 @@ export default function WorkflowDemo() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* stacked timeline — same state, reflowed for narrow viewports */}
-        <div className="mx-auto mt-5 max-w-md space-y-5 lg:hidden">
-          <HeadCard />
-
-          {(
-            [
-              { mgr: MGR_A, group: "A" as const, team: ANALYSTS_A, offset: 0 },
-              { mgr: MGR_B, group: "B" as const, team: ANALYSTS_B, offset: 3 },
-            ]
-          ).map(({ mgr, group, team, offset }, gi) => (
-            <div
-              key={group}
-              className="border-l-2 border-ink-900/[0.18] pl-4"
-            >
-              <ManagerCard mgr={mgr} group={group} i={gi} />
-              <div className="mt-3 space-y-3 border-l-2 border-ink-900/[0.12] pl-4">
-                {team.map((a, i) => (
-                  <AnalystCard key={a.key} a={a} i={i + offset} />
-                ))}
-              </div>
-            </div>
-          ))}
         </div>
 
         <div className="mt-8 min-h-[48px] text-center">
