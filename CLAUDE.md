@@ -45,6 +45,8 @@ Three routes compose section components from `components/`; every page shares `H
 
 The route reads `GOOGLE_SHEETS_WEBHOOK_URL` **and falls back to `GOOGLE_SHEETS_WEBHOOKS_URL`** (plural) — the plural spelling is what currently exists in Vercel, and the mismatch was silently 500-ing the production form. Once Vercel is renamed to the singular canonical name, the fallback can go.
 
+**The webhook URL is not a credential — the secret is.** A Web App deployed with "Access: Anyone" will write for anybody who holds its URL, and URLs leak (this one sat in `.env.local.example` in a public repo). So every request also carries `CONTACT_WEBHOOK_SECRET`, which the script compares against its `WEBHOOK_SECRET` script property and **fails closed** on: unset property means every submission is refused. Set the script property before deploying a new script version. Apps Script Web Apps always answer HTTP 200, so the route checks `ok` in the response *body* — a 200 is not proof the row landed.
+
 The Apps Script source to paste into the Sheet's editor (Extensions → Apps Script) is at [scripts/google-apps-script-webhook.gs](scripts/google-apps-script-webhook.gs); it is not built or executed by the Next.js app. `ContactForm` is styled to sit inside the panel `ContactSection` provides, so it carries no card border or padding of its own.
 
 ### Styling system
