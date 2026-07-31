@@ -8,6 +8,11 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Connect and list the webspace, but upload nothing"
+        type: boolean
+        default: false
 
 # One deploy at a time. Two overlapping uploads to the same webspace would
 # interleave files and could leave the live site half-updated.
@@ -50,14 +55,37 @@ jobs:
           # regressed — either way, do not publish it.
           grep -q "Allow: /" out/robots.txt
 
-      - name: Upload to IONOS webspace
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      # Runs on every deploy. A deploy that "succeeds" while the live site
+      # never changes almost always means the target directory is wrong, and
+      # this is what makes that visible instead of mysterious.
+      - name: Inspect target directory
         env:
           IONOS_HOST: ${{ secrets.IONOS_SFTP_HOST }}
           IONOS_USER: ${{ secrets.IONOS_SFTP_USER }}
           IONOS_PASSWORD: ${{ secrets.IONOS_SFTP_PASSWORD }}
-          IONOS_REMOTE_DIR: ${{ secrets.IONOS_REMOTE_DIR }}
+          IONOS_REMOTE_DIR: ${{ vars.IONOS_REMOTE_DIR }}
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          echo "Uploading into: $IONOS_REMOTE_DIR"
+          lftp -c "
+            set sftp:auto-confirm yes;
+            open -u \"$IONOS_USER\",\"$IONOS_PASSWORD\" sftp://$IONOS_HOST;
+            cls -l \"$IONOS_REMOTE_DIR\";
+          "
+
+      - name: Upload to IONOS webspace
+        if: ${{ !inputs.dry_run }}
+        env:
+          IONOS_HOST: ${{ secrets.IONOS_SFTP_HOST }}
+          IONOS_USER: ${{ secrets.IONOS_SFTP_USER }}
+          IONOS_PASSWORD: ${{ secrets.IONOS_SFTP_PASSWORD }}
+          # A variable, not a secret: secrets are masked in logs, and seeing
+          # the actual upload path is the whole game when a deploy "succeeds"
+          # but the live site doesn't change.
+          IONOS_REMOTE_DIR: ${{ vars.IONOS_REMOTE_DIR }}
+        run: |
           # No --delete: mirroring without it only adds and overwrites, so a
           # wrong IONOS_REMOTE_DIR cannot wipe the webspace. Once the target
           # path is confirmed correct, add --delete to clear removed files.
