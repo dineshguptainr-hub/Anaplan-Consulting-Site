@@ -1,0 +1,29 @@
+# Apache config for the IONOS webspace. Copied verbatim into out/ by the
+# static export and uploaded with the site.
+#
+# Without this, four URLs serve identical content — http/https × apex/www —
+# and the site contradicts its own sitemap, which names
+# https://epmjourney.com as canonical. Collapse all four onto that one.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS.
+  #
+  # Both conditions must fail before redirecting. Checking %{HTTPS} alone is
+  # the usual way to write this and the usual way to cause an infinite
+  # redirect loop: if TLS terminates at a load balancer, %{HTTPS} is never
+  # "on" even on an https request, so every request redirects to itself
+  # forever. X-Forwarded-Proto is the second opinion that prevents that.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://epmjourney.com%{REQUEST_URI} [R=301,L]
+
+  # www → apex. Separate rule rather than folded into the one above, so
+  # neither can loop on the other.
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^ https://epmjourney.com%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# The export writes 404.html; without this Apache serves its own bare page.
+ErrorDocument 404 /404.html
