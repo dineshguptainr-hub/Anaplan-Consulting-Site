@@ -50,8 +50,19 @@ function doPost(e) {
     return jsonOutput({ ok: false, error: "missing_token" });
   }
 
-  if (!verifyTurnstile(secret, data.turnstileToken)) {
-    return jsonOutput({ ok: false, error: "failed_challenge" });
+  var verdict = verifyTurnstile(secret, data.turnstileToken);
+  if (!verdict.success) {
+    // Pass Cloudflare's own codes back. Without them "failed_challenge" is
+    // unfalsifiable — a wrong secret key, an expired token and a replayed
+    // token all look identical, and you end up guessing. The codes name it:
+    //   invalid-input-secret   -> TURNSTILE_SECRET is wrong or not this widget's
+    //   invalid-input-response -> the token is malformed or not genuine
+    //   timeout-or-duplicate   -> token already used, or older than ~5 minutes
+    return jsonOutput({
+      ok: false,
+      error: "failed_challenge",
+      codes: verdict.codes,
+    });
   }
 
   // Only reached once Cloudflare has confirmed the token. Validate the shape
@@ -72,8 +83,9 @@ function doPost(e) {
   return jsonOutput({ ok: true });
 }
 
-// Cloudflare answers { success: true|false, ... }. Any transport failure or
-// unparseable response counts as a failed challenge, never as a pass.
+// Cloudflare answers { success: true|false, "error-codes": [...] }. Any
+// transport failure or unparseable response counts as a failed challenge,
+// never as a pass.
 function verifyTurnstile(secret, token) {
   try {
     var response = UrlFetchApp.fetch(VERIFY_URL, {
@@ -81,9 +93,13 @@ function verifyTurnstile(secret, token) {
       payload: { secret: secret, response: token },
       muteHttpExceptions: true,
     });
-    return JSON.parse(response.getContentText()).success === true;
+    var body = JSON.parse(response.getContentText());
+    return {
+      success: body.success === true,
+      codes: body["error-codes"] || [],
+    };
   } catch (err) {
-    return false;
+    return { success: false, codes: ["fetch_failed"] };
   }
 }
 
