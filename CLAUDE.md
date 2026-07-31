@@ -104,6 +104,8 @@ Everything below is defined once in [app/globals.css](app/globals.css) and reuse
 
 That constraint is what shapes the contact form: it lost its API route and now talks to Apps Script directly, guarded by Turnstile. See the contact form section above before changing it.
 
+**Canonicalisation lives in [public/.htaccess](public/.htaccess)**, not in the app. IONOS serves the site over http *and* https, on the apex *and* `www`, all returning 200 — four URLs for identical content, contradicting the sitemap that names `https://epmjourney.com` as canonical. The `.htaccess` 301s the other three onto it. Note the HTTPS rule checks both `%{HTTPS}` and `X-Forwarded-Proto`: testing only `%{HTTPS}` is the standard way to write this *and* the standard way to cause an infinite redirect loop when TLS terminates upstream. Anything in `public/` is copied verbatim into `out/`, dotfiles included — verified, not assumed.
+
 `trailingSlash: true` makes `/services/` canonical, so the export writes `out/services/index.html` and Apache serves it from the directory index with no rewrite rules. `app/sitemap.ts` lists the slashed forms to match; listing `/services` would advertise URLs that only 301.
 
 `lib/site.ts` is the single source of truth for the URL. `SITE_URL` is hard-coded so the address baked into the export never depends on which machine built it. `SHOULD_INDEX` keys off `NODE_ENV`, deliberately **not** a host-specific variable — an earlier version read `VERCEL_ENV`, which simply does not exist on an IONOS build, so `next build` produced a `robots.txt` saying `Disallow: /` and the live site would never have been indexed. Set `NEXT_PUBLIC_SITE_NOINDEX=1` to keep a staging copy out of the index.
