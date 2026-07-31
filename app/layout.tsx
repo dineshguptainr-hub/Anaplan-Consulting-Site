@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Libre_Franklin, Source_Sans_3, IBM_Plex_Mono } from "next/font/google";
+import { CURRENT_URL } from "@/lib/site";
 import "./globals.css";
 
 const body = Source_Sans_3({
@@ -23,12 +24,8 @@ const mono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(CURRENT_URL),
   title: "EPM Journey | Master Anaplanner — Connected Planning Consulting",
   description:
     "Escape spreadsheet hell. A Certified Master Anaplanner and team of enterprise practitioners replacing fragile Excel models with automated, connected planning across Finance, Workforce, Opex, and Capex.",

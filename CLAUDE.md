@@ -98,6 +98,10 @@ Everything below is defined once in [app/globals.css](app/globals.css) and reuse
 
 Vercel auto-deploys this repo from GitHub. **Pushing to `master` publishes the live site** — treat it as a release, not a save. Pushing any other branch produces a private preview deployment instead, which is the safe way to check a change on a real domain before it goes public.
 
+**The live site is `https://epmjourney.com`** (apex is canonical; `www` 308-redirects to it). The domain is registered at IONOS and **IONOS also hosts its DNS** — Vercel is pointed at via an `A` record on the apex, not by delegating nameservers. That is deliberate: the domain carries live `mx00/mx01.ionos.co.uk` MX records, and handing the nameservers to Vercel would drop them and kill `@epmjourney.com` mail. Change web records at IONOS; leave NS and MX alone.
+
+`lib/site.ts` is the single source of truth for the URL. `SITE_URL` is hard-coded rather than read from `VERCEL_PROJECT_PRODUCTION_URL`, which resolves to whichever domain Vercel currently considers shortest and can drift. `CURRENT_URL` (used for `metadataBase`) self-references on preview and localhost, and `app/robots.ts` returns `disallow: /` on anything that isn't `VERCEL_ENV === "production"` — **preview deployments are `noindex` by design**, so don't read that as a bug when testing a branch.
+
 There is no `.vercel` directory in the repo and the `gh` CLI is not installed, so opening PRs and watching builds happen in the browser rather than from the terminal.
 
 **Vercel bakes environment variables in at build time.** Adding or editing one changes nothing until the project is redeployed (Deployments → ⋮ → Redeploy). This is the first thing to check whenever a config change appears to have had no effect — it cost half an hour of misdiagnosis once, with a broken contact form that looked like a bad webhook URL and was really a build that predated the new variables.
