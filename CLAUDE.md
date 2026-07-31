@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm install` — install dependencies
 - `npm run dev` — Next.js dev server (Turbopack) on http://localhost:3000
 - `npm run build` — production build; **also type-checks, so treat any failure as blocking**
-- `npm run start` — serve the production build (run `build` first)
+- `npm run start` — **does not work**; the site is a static export, so there is no server to start. Serve `out/` instead: `cd out && python -m http.server 8080`
 - `npm run lint` — no ESLint config exists in this repo yet, so the first run prompts interactively to create one. In a non-interactive/agent context that prompt is expected, not a failure.
 - No test suite is configured.
 - **Next 16 on React 18**, not React 19 — don't reach for React 19-only APIs.
@@ -42,15 +42,17 @@ Three routes compose section components from `components/`; every page shares `H
 
 ### Contact form → Google Sheets
 
-[components/ContactForm.tsx](components/ContactForm.tsx) holds form state and validation and POSTs JSON to [app/api/contact/route.ts](app/api/contact/route.ts). That server route validates the payload and forwards it to a Google Apps Script Web App, which appends a row to a Sheet. Forwarding server-side keeps the webhook URL out of the client bundle. Without the env var the route returns 500 and the form shows a graceful inline error.
+[components/ContactForm.tsx](components/ContactForm.tsx) holds form state and validation and POSTs **directly** to a Google Apps Script Web App, which appends a row to a Sheet. There is no server route in between — the site is a static export (see Deployment), so there is nowhere to run one.
 
-The route reads `GOOGLE_SHEETS_WEBHOOK_URL`. Vercel once defined this as `GOOGLE_SHEETS_WEBHOOKS_URL` (plural), which silently 500-ed the production form; the route carried a fallback accepting both spellings until Vercel was corrected to the singular canonical name.
+**There is no secret in the browser, because there cannot be one.** The site previously proxied through `app/api/contact/route.ts` so a shared secret could live server-side. Static hosting removed that option: anything the bundle carries is public. So the browser instead proves it solved a **Cloudflare Turnstile** challenge, and the Apps Script — which *does* have somewhere private to keep a key — verifies that token with Cloudflare before writing. The Turnstile **site key** in the page is public by design; the **secret key** lives only in the script's `TURNSTILE_SECRET` script property, and the script **fails closed** on it: unset property means every submission is refused. Set the property before deploying a new script version.
 
-**The webhook URL is not a credential — the secret is.** A Web App deployed with "Access: Anyone" will write for anybody who holds its URL, and URLs leak (this one sat in `.env.local.example` in a public repo). So every request also carries `CONTACT_WEBHOOK_SECRET`, which the script compares against its `WEBHOOK_SECRET` script property and **fails closed** on: unset property means every submission is refused. Set the script property before deploying a new script version. Apps Script Web Apps always answer HTTP 200, so the route checks `ok` in the response *body* — a 200 is not proof the row landed.
+Both `NEXT_PUBLIC_CONTACT_ENDPOINT` and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` are deliberately `NEXT_PUBLIC_` — they are meant to be readable. Do not "fix" that by trying to hide them.
+
+**The form posts `Content-Type: text/plain`, and that is load-bearing.** `application/json` would make it a non-simple CORS request, triggering a preflight `OPTIONS` that Apps Script Web Apps do not answer — the submission fails before it is ever sent. Apps Script also always answers HTTP 200, so the form checks `ok` in the response *body*; a 200 is not proof the row landed.
 
 **Debugging the webhook from a terminal is misleading.** A successful `doPost` answers **HTTP 302** to a `script.googleusercontent.com/macros/echo?...` URL, and the JSON body lives at *that* URL — `curl -L` mangles the follow and reports Google's "Page not found" Drive page, which reads exactly like a wrong URL and is not. Fetch the `Location` header, then GET it separately. Two more signals: a thrown script exception renders its error inline with **no** redirect, and a `GET` on this POST-only script answering `Script function not found: doGet` proves the deployment is live and publicly reachable. Also check **Who has access: Anyone** on the deployment — anything stricter returns the same Drive error page to a server-side call.
 
-The Apps Script source to paste into the Sheet's editor (Extensions → Apps Script) is at [scripts/google-apps-script-webhook.gs](scripts/google-apps-script-webhook.gs); it is not built or executed by the Next.js app. `ContactForm` is styled to sit inside the panel `ContactSection` provides, so it carries no card border or padding of its own.
+The Apps Script source to paste into the Sheet's editor (Extensions → Apps Script) is at [scripts/google-apps-script-webhook.gs](scripts/google-apps-script-webhook.gs); it is not built or executed by the Next.js app. To test the widget locally without a Cloudflare account, build with Cloudflare's always-passing test site key `1x00000000000000000000AA` — the hidden `cf-turnstile-response` field then fills with `XXXX.DUMMY.TOKEN.XXXX`, which is how you can tell the widget wired up correctly. `ContactForm` is styled to sit inside the panel `ContactSection` provides, so it carries no card border or padding of its own.
 
 ### Styling system
 
@@ -96,15 +98,21 @@ Everything below is defined once in [app/globals.css](app/globals.css) and reuse
 
 ## Deployment
 
-Vercel auto-deploys this repo from GitHub. **Pushing to `master` publishes the live site** — treat it as a release, not a save. Pushing any other branch produces a private preview deployment instead, which is the safe way to check a change on a real domain before it goes public.
+**The live site is `https://epmjourney.com`**, hosted on **IONOS Web Hosting Plus** — the same IONOS contract that registers the domain and runs `@epmjourney.com` mail. DNS stays on IONOS nameservers; the apex points at IONOS webspace.
 
-**The live site is `https://epmjourney.com`** (apex is canonical; `www` 308-redirects to it). The domain is registered at IONOS and **IONOS also hosts its DNS** — Vercel is pointed at via an `A` record on the apex, not by delegating nameservers. That is deliberate: the domain carries live `mx00/mx01.ionos.co.uk` MX records, and handing the nameservers to Vercel would drop them and kill `@epmjourney.com` mail. Change web records at IONOS; leave NS and MX alone.
+**The site is a static export** (`output: "export"` in [next.config.mjs](next.config.mjs)). `npm run build` writes a complete site to `out/`, which is what gets uploaded. This is not a preference — **IONOS shared hosting has no Node.js runtime at all**, so there is no server, no SSR, no ISR, no route handlers, and no middleware. IONOS's own docs are explicit that Node is available only at build time via GitHub Actions. Anything you add that needs a request-time server will build locally and fail in production.
 
-`lib/site.ts` is the single source of truth for the URL. `SITE_URL` is hard-coded rather than read from `VERCEL_PROJECT_PRODUCTION_URL`, which resolves to whichever domain Vercel currently considers shortest and can drift. `CURRENT_URL` (used for `metadataBase`) self-references on preview and localhost, and `app/robots.ts` returns `disallow: /` on anything that isn't `VERCEL_ENV === "production"` — **preview deployments are `noindex` by design**, so don't read that as a bug when testing a branch.
+That constraint is what shapes the contact form: it lost its API route and now talks to Apps Script directly, guarded by Turnstile. See the contact form section above before changing it.
 
-There is no `.vercel` directory in the repo and the `gh` CLI is not installed, so opening PRs and watching builds happen in the browser rather than from the terminal.
+`trailingSlash: true` makes `/services/` canonical, so the export writes `out/services/index.html` and Apache serves it from the directory index with no rewrite rules. `app/sitemap.ts` lists the slashed forms to match; listing `/services` would advertise URLs that only 301.
 
-**Vercel bakes environment variables in at build time.** Adding or editing one changes nothing until the project is redeployed (Deployments → ⋮ → Redeploy). This is the first thing to check whenever a config change appears to have had no effect — it cost half an hour of misdiagnosis once, with a broken contact form that looked like a bad webhook URL and was really a build that predated the new variables.
+`lib/site.ts` is the single source of truth for the URL. `SITE_URL` is hard-coded so the address baked into the export never depends on which machine built it. `SHOULD_INDEX` keys off `NODE_ENV`, deliberately **not** a host-specific variable — an earlier version read `VERCEL_ENV`, which simply does not exist on an IONOS build, so `next build` produced a `robots.txt` saying `Disallow: /` and the live site would never have been indexed. Set `NEXT_PUBLIC_SITE_NOINDEX=1` to keep a staging copy out of the index.
+
+`npm run start` does **not** work with `output: "export"` — there is no server to start. To check a production build locally, serve the folder: `python -m http.server 8080` from inside `out/`.
+
+**Route handlers need `export const dynamic = "force-static"`.** `app/robots.ts`, `app/sitemap.ts` and `app/icon.tsx` all carry it. Without it the export fails with "export const dynamic … not configured on route", which reads like a config error and is really just Next asking you to confirm the route can be written at build time. Deleting `app/api/` also leaves stale generated types behind — if the build complains about a module you already removed, `rm -rf .next` and rebuild.
+
+**Next 16 prefetch 404s in the export are expected.** Hovering a nav link requests `contact/__next.contact.__PAGE__.txt`, but the export writes that payload to `contact/__next.contact/__PAGE__.txt` (a directory). The prefetch always 404s, so `<Link>` navigation falls back to a full page load. Navigation works; the console noise is cosmetic. Don't chase it as a broken deploy.
 
 ## Verifying changes
 
