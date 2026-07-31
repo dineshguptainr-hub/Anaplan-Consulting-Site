@@ -25,5 +25,26 @@
   RewriteRule ^ https://epmjourney.com%{REQUEST_URI} [R=301,L]
 </IfModule>
 
+<IfModule mod_headers.c>
+  # The http -> https redirect above only helps once the browser has already
+  # talked to us. A first-time visitor on a hostile network can have that
+  # plaintext request intercepted before the redirect ever arrives. HSTS closes
+  # that window by telling the browser never to try http for this domain again.
+  # Not submitting to the preload list — that is effectively irreversible.
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  # Stop browsers guessing a content type other than the one we send.
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Nobody has a reason to frame this site; refusing clickjacking outright.
+  # Turnstile is unaffected — it frames into our page, not the other way round.
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Nothing here uses these; deny them rather than leave them available.
+  Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), interest-cohort=()"
+</IfModule>
+
 # The export writes 404.html; without this Apache serves its own bare page.
 ErrorDocument 404 /404.html
