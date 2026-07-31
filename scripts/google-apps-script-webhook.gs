@@ -26,6 +26,32 @@
 
 var VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
+/**
+ * RUN THIS ONCE, BY HAND, AFTER PASTING THIS FILE IN.
+ *
+ * Apps Script grants OAuth scopes when you first authorise a project, and
+ * does not re-ask when later code needs more. This project began life only
+ * touching the Sheet, so it holds the Sheets scope and not
+ * script.external_request. Deploying code that calls UrlFetchApp therefore
+ * throws at runtime — the challenge verification fails with "fetch_failed"
+ * while everything else looks perfectly healthy.
+ *
+ * Running any function that calls UrlFetchApp from the editor makes Apps
+ * Script prompt for the missing scope. Select this function in the toolbar,
+ * press Run, and approve. It writes nothing and returns nothing useful; the
+ * authorisation prompt is the entire point.
+ */
+function authorizeExternalRequests() {
+  var response = UrlFetchApp.fetch(VERIFY_URL, {
+    method: "post",
+    payload: { secret: "authorization-probe", response: "authorization-probe" },
+    muteHttpExceptions: true,
+  });
+  // Expect {"success":false,"error-codes":["invalid-input-secret"]} — that is
+  // a SUCCESS for our purposes. It proves the request left Google.
+  Logger.log(response.getContentText());
+}
+
 // Caps on what gets written to the Sheet. A verified human can still paste a
 // megabyte of text; there is no reason to store it.
 var MAX_LENGTHS = { name: 120, email: 200, tool: 60, painPoint: 4000 };
