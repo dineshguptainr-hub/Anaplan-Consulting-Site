@@ -63,9 +63,13 @@ export default function PainPleasure() {
       <div className="container-max relative">
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow justify-center">The Transformation</span>
-          <h2 className="section-heading mt-4">
+          {/* h1, not h2: this is the opening section of /services, and that
+              page had no h1 at all. Styling is on .section-heading, so the tag
+              change is invisible. PainPleasure is used only here — if it ever
+              gets reused on a page that has its own h1, this must go back. */}
+          <h1 className="section-heading mt-4">
             You know the pain. Here&apos;s the graduation.
-          </h2>
+          </h1>
           <p className="mt-4 text-ink-500">
             Every finance leader living in spreadsheets recognizes this list.
             Here&apos;s exactly what changes when your planning moves onto a

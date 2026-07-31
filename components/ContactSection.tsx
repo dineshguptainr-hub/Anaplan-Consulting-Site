@@ -74,9 +74,12 @@ export default function ContactSection() {
       <div className="container-max relative">
         <div className="mx-auto max-w-[600px] text-center">
           <span className="eyebrow justify-center">Get In Touch</span>
-          <h2 className="section-heading mt-4">
+          {/* h1, not h2: /contact had no h1. Styling is on .section-heading,
+              so the tag change is invisible. ContactSection is used only on
+              that page. */}
+          <h1 className="section-heading mt-4">
             Ready to modernize your planning?
-          </h2>
+          </h1>
           <p className="mt-4 text-base leading-relaxed text-ink-500">
             Tell me where your current process breaks down — I&apos;ll come back
             with a plan, not a pitch deck.
