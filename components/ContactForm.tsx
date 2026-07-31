@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
 type FormState = {
   name: string;
@@ -25,6 +25,63 @@ const TOOL_OPTIONS = [
 ];
 
 const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
+
+// The site is a static export, so there is no server route to post through —
+// the browser talks to the Apps Script directly. Both values are public by
+// design: the endpoint is a write-only Web App that refuses anything without a
+// verified Turnstile token, and a Turnstile site key is meant to be in the page.
+const ENDPOINT = process.env.NEXT_PUBLIC_CONTACT_ENDPOINT;
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+const TURNSTILE_SRC =
+  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+type TurnstileApi = {
+  render: (
+    el: HTMLElement,
+    options: {
+      sitekey: string;
+      callback: (token: string) => void;
+      "expired-callback": () => void;
+      "error-callback": () => void;
+      theme?: "light" | "dark" | "auto";
+    },
+  ) => string;
+  reset: (widgetId: string) => void;
+  remove: (widgetId: string) => void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
+
+/** Loads the Turnstile script once, no matter how many times this is called. */
+function loadTurnstile(): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
+  if (window.turnstile) return Promise.resolve();
+
+  const existing = document.querySelector<HTMLScriptElement>(
+    `script[src="${TURNSTILE_SRC}"]`,
+  );
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () => reject(new Error("turnstile")));
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = TURNSTILE_SRC;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("turnstile"));
+    document.head.appendChild(script);
+  });
+}
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -69,6 +126,53 @@ export default function ContactForm() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  const widgetHost = useRef<HTMLDivElement | null>(null);
+  const widgetId = useRef<string | null>(null);
+
+  const configured = Boolean(ENDPOINT && TURNSTILE_SITE_KEY);
+
+  useEffect(() => {
+    if (!configured) return;
+    let cancelled = false;
+
+    loadTurnstile()
+      .then(() => {
+        if (cancelled || !widgetHost.current || !window.turnstile) return;
+        // Guard against a second render in React strict mode double-mounting.
+        if (widgetId.current) return;
+        widgetId.current = window.turnstile.render(widgetHost.current, {
+          sitekey: TURNSTILE_SITE_KEY as string,
+          callback: (t) => setToken(t),
+          "expired-callback": () => setToken(null),
+          "error-callback": () => setToken(null),
+          theme: "light",
+        });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSubmitError(
+            "Could not load the verification widget. Please refresh and try again.",
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      if (widgetId.current && window.turnstile) {
+        window.turnstile.remove(widgetId.current);
+        widgetId.current = null;
+      }
+    };
+  }, [configured]);
+
+  const resetChallenge = useCallback(() => {
+    setToken(null);
+    if (widgetId.current && window.turnstile) {
+      window.turnstile.reset(widgetId.current);
+    }
+  }, []);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -89,22 +193,45 @@ export default function ContactForm() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!configured) {
+      setSubmitError("Form is not configured yet.");
+      return;
+    }
     if (!validate()) return;
+
+    if (!token) {
+      setSubmitError("Please complete the verification below before submitting.");
+      return;
+    }
 
     setStatus("submitting");
     setSubmitError(null);
 
     try {
-      const res = await fetch("/api/contact", {
+      // text/plain keeps this a CORS "simple request". application/json would
+      // trigger a preflight OPTIONS, which Apps Script Web Apps do not answer.
+      const res = await fetch(ENDPOINT as string, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          ...form,
+          turnstileToken: token,
+          submittedAt: new Date().toISOString(),
+        }),
       });
-      if (!res.ok) throw new Error("Submission failed");
+
+      // Apps Script answers 200 even when it refuses the write, so the status
+      // proves nothing — the outcome is in the body.
+      const result = await res.json().catch(() => null);
+      if (!res.ok || result?.ok !== true) throw new Error("Submission failed");
+
       setStatus("success");
       setForm(INITIAL_STATE);
+      resetChallenge();
     } catch {
       setStatus("idle");
+      // A used token is spent, so the next attempt needs a fresh challenge.
+      resetChallenge();
       setSubmitError(
         "Something went wrong sending your request. Please try again or email directly.",
       );
@@ -223,6 +350,11 @@ export default function ContactForm() {
           <p className="mt-1.5 text-xs text-alert-600">{errors.painPoint}</p>
         )}
       </div>
+
+      {/* Cloudflare renders the challenge here. It usually resolves silently
+          and shows a short "verifying" state; only suspicious traffic gets an
+          interactive puzzle. */}
+      <div ref={widgetHost} className="flex justify-center" />
 
       {submitError && (
         <p className="text-center text-sm text-alert-600">{submitError}</p>

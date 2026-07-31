@@ -3,6 +3,11 @@ import { ImageResponse } from "next/og";
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
+// Required by output: "export" — rendered once at build time. Note this route
+// is unreferenced: the explicit metadata.icons in app/layout.tsx wins, so the
+// static PNGs in public/ are what actually ship.
+export const dynamic = "force-static";
+
 export default function Icon() {
   return new ImageResponse(
     (
